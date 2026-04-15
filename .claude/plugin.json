@@ -1,0 +1,74 @@
+{
+  "name": "blog-suite",
+  "version": "1.0.0",
+  "description": "エージェントAIブログの全設定をパッケージ化したプラグイン。Skills・Hooks・Subagents・MCP設定を一括でインストールできます。",
+  "author": "agent-blog team",
+  "components": {
+    "skills": [
+      "skills/collect",
+      "skills/draft",
+      "skills/review",
+      "skills/publish"
+    ],
+    "agents": [
+      "agents/researcher",
+      "agents/writer",
+      "agents/editor",
+      "agents/weekly-producer"
+    ],
+    "hooks": {
+      "PreToolUse": [
+        {
+          "matcher": "Bash|Write|Edit",
+          "hooks": [
+            {
+              "type": "command",
+              "command": "bash ${CLAUDE_PLUGIN_ROOT}/hooks/pre_tool_use.sh"
+            }
+          ]
+        }
+      ],
+      "PostToolUse": [
+        {
+          "matcher": "Write|Edit",
+          "hooks": [
+            {
+              "type": "command",
+              "command": "bash ${CLAUDE_PLUGIN_ROOT}/hooks/post_tool_use.sh"
+            }
+          ]
+        }
+      ],
+      "SessionStart": [
+        {
+          "matcher": "",
+          "hooks": [
+            {
+              "type": "command",
+              "command": "bash ${CLAUDE_PLUGIN_ROOT}/hooks/session_start.sh"
+            }
+          ]
+        }
+      ]
+    },
+    "mcpServers": {
+      "filesystem": {
+        "command": "npx",
+        "args": [
+          "-y",
+          "@modelcontextprotocol/server-filesystem",
+          "./",
+          "./drafts",
+          "./posts",
+          "./sources",
+          "./docs"
+        ]
+      },
+      "context7": {
+        "command": "npx",
+        "args": ["-y", "@upstash/context7-mcp"]
+      }
+    }
+  },
+  "install_notes": "GitHub MCPはPATが必要なため手動設定が必要です。README.mdのセットアップ手順を参照してください。"
+}

@@ -1,0 +1,16 @@
+# 個人設定（gitにコミットしない）
+CLAUDE.local.md
+.env
+
+# 下書き（公開前の記事は共有しない）
+drafts/
+
+# Auto Memory（プロジェクト設定で project スコープを選んだ場合は除外）
+.claude/agent-memory-local/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Node
+node_modules/
