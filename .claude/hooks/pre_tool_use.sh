@@ -23,9 +23,9 @@ if [ "$TOOL_NAME" = "Bash" ]; then
     exit 2
   fi
 
-  # drafts/ を経由せず直接 posts/ に書き込む mv をブロック
-  if echo "$COMMAND" | grep -qE 'mv\s+(?!drafts/).+\s+posts/'; then
-    echo "posts/ への直接書き込みは禁止です。必ず drafts/ を経由してください。" >&2
+  # posts/ への mv をブロック（/publish スキルは cp+rm を使用するため mv は不要）
+  if echo "$COMMAND" | grep -qE 'mv\s+\S+\s+posts/'; then
+    echo "posts/ への mv は禁止です。/publish スキルの cp+rm 手順を使ってください。" >&2
     exit 2
   fi
 
@@ -39,7 +39,7 @@ if [ "$TOOL_NAME" = "Write" ] || [ "$TOOL_NAME" = "Edit" ]; then
   if [ -n "$FILE_PATH" ]; then
     EXT="${FILE_PATH##*.}"
     case "$EXT" in
-      md|json|sh|env|gitignore|txt|yaml|yml) ;;
+      md|json|sh|env|gitignore|txt|yaml|yml|js|html) ;;
       *)
         echo "このプロジェクトでは .$EXT ファイルの編集は想定されていません。意図した操作か確認してください。" >&2
         exit 2
