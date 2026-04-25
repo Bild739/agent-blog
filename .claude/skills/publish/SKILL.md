@@ -13,14 +13,16 @@ allowed-tools: Bash, Read, Write
 
 ## 前提確認（必ずStep 0から始める）
 
-### Step 0: 実行前チェック
+### Step 0: 実行前チェック（自動）
 
-以下をすべて確認してから進む。1つでも未完了なら中断してユーザーに確認する:
+以下のスクリプトを実行する。エラーが出た場合は中断してユーザーに報告する:
 
-- [ ] 対象ファイルが `drafts/` に存在するか
-- [ ] `/review` のチェックで「公開可能」判定を受けているか
-- [ ] frontmatterの `date` が今日の日付か
-- [ ] gitの状態が clean か（未コミットの変更がないか）
+```bash
+bash scripts/pre-publish-check.sh [drafts/YYYY-MM-DD-slug.md]
+```
+
+引数省略時は `drafts/` の最新ファイルを自動検出する。
+スクリプトが出力する `DRAFT_FILE=...` の値を以降のステップで使用する。
 
 ### Step 1: ファイルを移動する
 
@@ -58,7 +60,26 @@ git push origin main
 
 **注意: `git push --force` は絶対に実行しない**
 
-### Step 4: 完了報告
+### Step 4: sources/collected.md を更新する
 
-- 公開URLを出力する（`https://[username].github.io/agent-blog/posts/[slug]`）
-- `sources/collected.md` の該当ソースに「記事化済み」と追記するよう促す
+`sources/collected.md` の該当エントリに `記事化済み` を追記する:
+
+```bash
+# 記事のタイトルまたはslugに一致する行の「記事化候補: Yes」を「記事化候補: Yes（記事化済み）」に更新
+SLUG="YYYY-MM-DD-slug"  # 対象記事のslug
+node -e "
+const fs = require('fs');
+const file = 'sources/collected.md';
+let content = fs.readFileSync(file, 'utf8');
+// 対象slugの記事化候補行を更新（前後10行以内に slug の文字列がある場合）
+// 簡易実装: 全体から記事化候補: Yes の行を記事化済みに（手動確認を推奨）
+console.log('sources/collected.md の該当行を手動で「記事化済み」に更新してください');
+"
+```
+
+**自動実行モードでは**: 公開後に `sources/collected.md` の `記事化候補: Yes` を
+`記事化候補: Yes（記事化済み）` に更新するスクリプトを別途 `scripts/mark-published.sh` に実装予定。
+
+### Step 5: 完了報告
+
+公開URLを出力する: `https://Bild739.github.io/agent-blog/posts/[slug]`
