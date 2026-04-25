@@ -25,9 +25,12 @@ allowed-tools: Bash, Read, Write
 ### Step 1: ファイルを移動する
 
 ```bash
-# drafts/ → posts/ に移動
-mv drafts/YYYY-MM-DD-slug.md posts/YYYY-MM-DD-slug.md
+# drafts/ → posts/ にコピーしてから元ファイルを削除（mv と同等）
+cp drafts/YYYY-MM-DD-slug.md posts/YYYY-MM-DD-slug.md
+rm drafts/YYYY-MM-DD-slug.md
 ```
+
+**注意: cp の後に必ず rm を実行する。drafts/ に残ったままにしない。**
 
 ### Step 2: docs/ にコピーする
 
@@ -35,6 +38,14 @@ GitHub Pages の公開ルートにコピーする:
 
 ```bash
 cp posts/YYYY-MM-DD-slug.md docs/posts/YYYY-MM-DD-slug.md
+```
+
+### Step 2.5: index.html を更新する
+
+記事リストを自動生成する:
+
+```bash
+node docs/update-index.js
 ```
 
 ### Step 3: git操作
