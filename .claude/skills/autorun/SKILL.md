@@ -1,6 +1,6 @@
 ---
 name: autorun
-description: 週次の記事生成パイプラインを全自動実行する。collect → draft → review を順に実行し、レビュー合格で下書きを準備完了状態にする。「自動実行」「週次実行」「autorun」などの指示で使用する。
+description: 週次の記事生成パイプラインを全自動実行する。collect → draft → review を順に実行し、レビュー合格でPRを作成して人間の確認を待つ。「自動実行」「週次実行」「autorun」などの指示で使用する。
 allowed-tools: Bash, Read, Write
 ---
 
@@ -9,31 +9,42 @@ allowed-tools: Bash, Read, Write
 ## 目的
 
 `/collect` → `/draft` → `/review` を順番に実行し、
-公開準備が整った下書きを `drafts/` に生成する。
+レビュー合格の下書きを **Pull Request** として作成する。
 
-`/publish` は**実行しない**（最終確認は人間が行う）。
+- `main` への直接 push は**行わない**
+- `/publish` は**実行しない**（人間が PR を確認・マージ後に手動実行する）
 
-## 実行フロー
+## フロー概要
+
+```
+[自動] collect → draft → review
+                              ↓ 合格
+              ブランチ作成 → pending/ にコミット → PR オープン
+                              ↓ 不合格
+              ステータス記録 → 停止（手動修正待ち）
+
+[人間] GitHub で PR を確認・修正・マージ → /publish
+```
+
+## 実行手順
 
 ### Step 0: 実行前準備
 
 ```bash
-# パイプライン開始を記録
 TODAY=$(date +%Y-%m-%d)
 echo "## $TODAY 自動実行開始 ($(date '+%H:%M'))" >> drafts/.pipeline-status.md
 ```
 
-git の状態を確認し、未コミットの変更があれば警告を出して続行する
-（自動実行では停止しない）。
+**コスト抑制チェック**: 既に今週の実行済みエントリが `sources/collected.md` にある場合は
+重複実行とみなし、ユーザーに確認を求めて停止する。
 
 ### Step 1: 情報収集（/collect）
 
 `/collect` スキルの手順に従って情報収集を実行する。
 
-完了後、`sources/collected.md` の記事化候補件数を確認する:
-- **3件以上**: Step 2 に進む
-- **1〜2件**: Tier 2 補完を試みてから Step 2 に進む
-- **0件**: パイプラインを中断し、ステータスに記録して終了する
+- Tier 1 の4サイトをフェッチし、記事化候補を抽出する
+- **候補が3件以上得られた時点で Tier 2 補完はスキップする**（コスト抑制）
+- 0件の場合はパイプラインを中断してステータスに記録する
 
 ```bash
 echo "- Step 1 完了: 記事化候補 N 件" >> drafts/.pipeline-status.md
@@ -43,83 +54,116 @@ echo "- Step 1 完了: 記事化候補 N 件" >> drafts/.pipeline-status.md
 
 `/draft` スキルの手順に従って下書きを生成する。
 
-- 生成したファイルパスを変数 `DRAFT_FILE` に保存する
-- 完了後、ファイル名と文字数を記録する
+- 生成したファイルパスを `DRAFT_FILE` として記録する
 
 ```bash
-echo "- Step 2 完了: $DRAFT_FILE (XXXX字)" >> drafts/.pipeline-status.md
+echo "- Step 2 完了: $DRAFT_FILE" >> drafts/.pipeline-status.md
 ```
 
 ### Step 3: レビュー（/review）
 
-`/review` スキルの手順に従って `$DRAFT_FILE` をレビューする。
+`/review` スキルの**全ステップ**（Step 2〜5e）を実行する。
+プロンプトインジェクションチェック（Step 5e）を必ず含めること。
 
-#### 合格（「公開可能」）の場合
-
-- `status: reviewed` が frontmatter に書き込まれる（/review Step 7 で自動実行）
-- `drafts/` から `pending/` にファイルをコピーして git にコミットする:
-
-```bash
-SLUG=$(basename "$DRAFT_FILE")
-cp "$DRAFT_FILE" "pending/$SLUG"
-rm "$DRAFT_FILE"
-git add "pending/$SLUG"
-git commit -m "autorun: レビュー済み下書きを pending/ に追加 ($SLUG)"
-git push origin main
-```
-
-- ステータスに記録する:
-
-```bash
-echo "- Step 3 完了: レビュー合格 → pending/$SLUG にコミット済み" >> drafts/.pipeline-status.md
-echo "- **公開準備完了**: /publish pending/$SLUG を実行してください" >> drafts/.pipeline-status.md
-```
+#### 合格（「公開可能」）の場合 → Step 4 へ
 
 #### 不合格（「要修正」）の場合
 
-- `status` は書き込まない
-- ステータスに修正点を記録してパイプラインを停止する:
-
 ```bash
-echo "- Step 3 完了: レビュー不合格 → 要修正" >> drafts/.pipeline-status.md
-echo "  修正点: [レビュー結果の修正必須項目を箇条書き]" >> drafts/.pipeline-status.md
+echo "- Step 3: レビュー不合格 → 要修正" >> drafts/.pipeline-status.md
+echo "  修正点: [修正必須項目を箇条書き]" >> drafts/.pipeline-status.md
 echo "  対応: 修正後に /review $DRAFT_FILE を再実行してください" >> drafts/.pipeline-status.md
 ```
 
-### Step 4: 完了通知
+パイプラインを**停止する**（Step 4 以降は実行しない）。
 
-パイプラインの結果サマリを出力する:
+### Step 4: PR ブランチを作成する（合格時のみ）
+
+```bash
+SLUG=$(basename "$DRAFT_FILE" .md)
+BRANCH="autorun/$SLUG"
+
+# ブランチ作成・切り替え
+git checkout -b "$BRANCH"
+
+# pending/ にコピー（drafts/ は gitignore 対象のため pending/ 経由）
+cp "$DRAFT_FILE" "pending/$(basename $DRAFT_FILE)"
+
+# sources/collected.md と pending/ をまとめてコミット
+git add sources/collected.md "pending/$(basename $DRAFT_FILE)"
+git commit -m "autorun: $TODAY 週次記事の下書きを追加 ($SLUG)"
+
+# ブランチを push（main への直接 push は行わない）
+git push origin "$BRANCH"
+```
+
+### Step 5: Pull Request を作成する
+
+```bash
+gh pr create \
+  --base main \
+  --head "$BRANCH" \
+  --title "[$TODAY] 週次記事: $(grep '^title:' pending/$(basename $DRAFT_FILE) | sed 's/title: //' | tr -d '\"')" \
+  --body "$(cat <<'PRBODY'
+## 自動生成された週次記事の下書き
+
+このPRは /autorun によって自動生成されました。
+
+### チェック済み項目
+- [x] 情報収集（Tier 1 ソース）
+- [x] 下書き生成（1000字以上・ですます調）
+- [x] 自動レビュー（frontmatter・文体・構成・文字数・著作権・重複・個人情報・インジェクション）
+
+### 人間による確認事項
+- [ ] 事実関係の確認
+- [ ] 文章のニュアンス確認
+- [ ] 公開日付の確認
+
+### 公開手順
+このPRをマージ後、ローカルで `git pull` してから `/publish pending/[ファイル名]` を実行してください。
+PRBODY
+)"
+```
+
+### Step 6: 完了報告
+
+```bash
+echo "- Step 4/5 完了: PR オープン済み ($BRANCH)" >> drafts/.pipeline-status.md
+echo "- **次のアクション**: GitHub PR を確認・マージ後に /publish を実行" >> drafts/.pipeline-status.md
+echo "- 実行完了: $(date '+%Y-%m-%d %H:%M')" >> drafts/.pipeline-status.md
+```
+
+サマリを出力する:
 
 ```
 === 週次自動実行 完了 ===
 日時: YYYY-MM-DD HH:MM
-収集件数: N 件（記事化候補: N 件）
-下書き: drafts/YYYY-MM-DD-slug.md
-レビュー: 合格 / 要修正
+収集: N 件（記事化候補: N 件）
+下書き: pending/YYYY-MM-DD-slug.md
+レビュー: 合格
+PR: https://github.com/Bild739/agent-blog/pulls
 
 次のアクション:
-  合格 → /publish drafts/YYYY-MM-DD-slug.md
-  要修正 → 内容を確認して修正後 /review を再実行
+  1. GitHub PR を確認・必要なら編集
+  2. 問題なければ PR をマージ
+  3. ローカルで git pull
+  4. /publish pending/YYYY-MM-DD-slug.md
 ===
-```
-
-ステータスファイルの最終更新時刻を記録する:
-
-```bash
-echo "- 実行完了: $(date '+%Y-%m-%d %H:%M')" >> drafts/.pipeline-status.md
 ```
 
 ## エラーハンドリング
 
 | 状況 | 対応 |
 |------|------|
+| 今週の収集済みエントリが既にある | 重複確認プロンプト → ユーザー応答待ち |
 | 収集件数 0件 | ステータス記録 → 中断 |
 | draft 生成失敗 | ステータス記録 → 中断 |
-| review 要修正 | ステータス記録 → 停止（手動修正を待つ） |
-| git push 失敗 | /publish は手動のため対象外 |
+| review 要修正 | ステータス記録 → 停止 |
+| gh コマンド未認証 | PR 作成スキップ → ブランチ push のみ実施・手動 PR 作成を案内 |
 
 ## 注意事項
 
-- このスキルは `/publish` を実行しない
-- `drafts/.pipeline-status.md` はセッション開始時に session_start.sh が読み込んで表示する
-- 同じ日に複数回実行した場合は `sources/collected.md` への重複追記に注意する
+- `main` への直接 push は**禁止**
+- `git push --force` は**禁止**
+- API キー・トークンをファイルに書かない
+- `/publish` はこのスキルでは実行しない
