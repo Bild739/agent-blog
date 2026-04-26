@@ -16,30 +16,25 @@ allowed-tools: WebFetch, WebSearch, Read, Write
 ### Step 1: 収集対象を決める
 
 $ARGUMENTS があればそのテーマで収集する。
-なければ以下のキーワードで幅広く収集する:
+なければ全般的なAIエージェント最新動向を収集する。
 
-- 「AI agent 2026」
-- 「LLM agent workflow」
-- 「Claude Code tips」
-- 「MCP server」
-- 「agentic AI use case」
-- 「AIエージェント 活用」
-- 「自律型AI 最新」
+### Step 2: Tier 1 — 必須サイトを WebFetch で確認する
 
-### Step 2: 情報源を確認する
-
-`.claude/rules/sources.md` に記載された優先度の高いサイトから順に確認する。
-特に以下は毎回チェックする:
+`.claude/rules/sources.md` の **Tier 1** を必ず全件フェッチする:
 
 1. https://www.anthropic.com/news
 2. https://openai.com/blog
 3. https://huggingface.co/blog
+4. https://deepmind.google/discover/blog/
 
-### Step 3: 記事を収集する
+各サイトから公開30日以内の記事を抽出し、記事化候補を判定する。
 
-- 公開から30日以内の記事を対象にする
-- 1回の収集で5〜10件を目安にする
-- タイトルと本文冒頭を読んで関連性を判断する
+### Step 3: Tier 2 — 件数が不足する場合は WebSearch で補完する
+
+Tier 1 で記事化候補が3件未満の場合、`sources.md` の **Tier 2 推奨キーワード** で
+WebSearch を実行して補完する。
+
+- Tier 1 で3件以上候補が出た場合はこのステップをスキップしてよい
 
 ### Step 4: sources/collected.md に追記する
 
@@ -48,4 +43,7 @@ $ARGUMENTS があればそのテーマで収集する。
 
 ### Step 5: 完了報告
 
-収集件数・記事化候補の件数・今日の収集日時をサマリとして出力する。
+以下をサマリとして出力する:
+- 収集件数・記事化候補の件数
+- 使用した Tier（Tier 1 のみ / Tier 1 + Tier 2）
+- 今日の収集日時
