@@ -1,0 +1,18 @@
+{
+  "permissions": {
+    "allow": [
+      "Skill(review)",
+      "mcp__filesystem__read_text_file",
+      "mcp__filesystem__list_directory",
+      "Bash(python *)",
+      "Bash(python3 /c/claudecode/agent-blog/docs/update-index.py)",
+      "Bash(py /c/claudecode/agent-blog/docs/update-index.py)",
+      "Bash(command -v python3)",
+      "Read(//usr/**)",
+      "Bash(ls /c/Python*/python.exe)",
+      "Bash(where python *)",
+      "Bash(/c/Users/suzuk/AppData/Local/Microsoft/WindowsApps/python3 *)",
+      "Bash(node *)"
+    ]
+  }
+}
