@@ -18,10 +18,12 @@ allowed-tools: Bash, Read, Write
 以下のスクリプトを実行する。エラーが出た場合は中断してユーザーに報告する:
 
 ```bash
+# drafts/ または pending/ のファイルを指定
 bash scripts/pre-publish-check.sh [drafts/YYYY-MM-DD-slug.md]
+bash scripts/pre-publish-check.sh [pending/YYYY-MM-DD-slug.md]
 ```
 
-引数省略時は `drafts/` の最新ファイルを自動検出する。
+引数省略時は `pending/` → `drafts/` の順で最新ファイルを自動検出する。
 スクリプトが出力する `DRAFT_FILE=...` の値を以降のステップで使用する。
 
 ### Step 1: ファイルを移動する

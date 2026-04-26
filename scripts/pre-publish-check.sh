@@ -17,7 +17,11 @@ WARNINGS=0
 if [ -n "$1" ]; then
   DRAFT_FILE="$1"
 else
-  DRAFT_FILE=$(ls -t drafts/*.md 2>/dev/null | head -1)
+  # pending/ → drafts/ の順で最新ファイルを自動検出
+  DRAFT_FILE=$(ls -t pending/*.md 2>/dev/null | head -1)
+  if [ -z "$DRAFT_FILE" ]; then
+    DRAFT_FILE=$(ls -t drafts/*.md 2>/dev/null | head -1)
+  fi
 fi
 
 echo "=== publish 前チェック ==="

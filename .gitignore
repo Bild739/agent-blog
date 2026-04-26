@@ -2,8 +2,11 @@
 CLAUDE.local.md
 .env
 
-# 下書き（公開前の記事は共有しない）
+# 下書き（手動作業用・公開前の記事は共有しない）
 drafts/
+
+# 自動実行の出力（pending/ は git 管理。/publish 前の人間確認用）
+# pending/ は除外しない → VSCode の差分で確認できる
 
 # Auto Memory（プロジェクト設定で project スコープを選んだ場合は除外）
 .claude/agent-memory-local/
