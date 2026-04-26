@@ -28,13 +28,19 @@ bash scripts/pre-publish-check.sh [pending/YYYY-MM-DD-slug.md]
 
 ### Step 1: ファイルを移動する
 
+ファイルの所在に応じてコマンドを選ぶ:
+
 ```bash
-# drafts/ → posts/ にコピーしてから元ファイルを削除（mv と同等）
+# drafts/ から publish する場合
 cp drafts/YYYY-MM-DD-slug.md posts/YYYY-MM-DD-slug.md
 rm drafts/YYYY-MM-DD-slug.md
+
+# pending/ から publish する場合（producer経由など）
+cp pending/YYYY-MM-DD-slug.md posts/YYYY-MM-DD-slug.md
+rm pending/YYYY-MM-DD-slug.md
 ```
 
-**注意: cp の後に必ず rm を実行する。drafts/ に残ったままにしない。**
+**注意: cp の後に必ず rm を実行する。drafts/ や pending/ に残ったままにしない。**
 
 ### Step 2: docs/ にコピーする
 
