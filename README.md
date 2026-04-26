@@ -90,8 +90,8 @@ claude
 ### 週次まとめ記事を一括生成する場合
 
 ```bash
-# researcher + writer を並列起動して複数記事を一括生産
-@weekly-producer 今週のAIエージェント関連ニュースをまとめて
+# producer エージェントがシングルモードで researcher → writer → editor を順番に実行
+@producer シングルモードで記事を生成して
 ```
 
 ---
@@ -106,7 +106,7 @@ agent-blog/
 │   ├── settings.json          # Hooks設定
 │   ├── rules/                 # seo.md / tone.md / sources.md
 │   ├── skills/                # /collect /draft /review /publish
-│   ├── agents/                # researcher / writer / editor / weekly-producer
+│   ├── agents/                # researcher / writer / editor / producer
 │   └── hooks/                 # 自動実行スクリプト
 ├── posts/                     # 公開済み記事（git管理）
 ├── drafts/                    # 下書き（.gitignore対象・各自のローカルのみ）
@@ -126,7 +126,7 @@ agent-blog/
 | Skills | /collect /draft /review /publish のワークフロー化 |
 | Hooks | force push防止・文字数チェック・起動時コンテキスト注入 |
 | Subagents | researcher / writer / editor の専門分業 |
-| Agent Teams | weekly-producer による並列記事生産 |
+| Agent Teams | producer による記事生産（シングル・マルチモード） |
 | GitHub MCP | リポジトリへのpush・Pages公開 |
 | Filesystem MCP | プロジェクト内ファイルの安全な操作 |
 | Context7 MCP | 最新ライブラリ仕様の参照 |

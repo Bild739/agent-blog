@@ -32,7 +32,7 @@ fi
 
 echo ""
 
-# pending/ の公開待ち下書き（/autorun がレビュー合格後にコミットしたもの）
+# pending/ の公開待ち下書き（producer エージェントがレビュー合格後にコミットしたもの）
 PENDING_COUNT=$(ls pending/*.md 2>/dev/null | grep -v '.gitkeep' | wc -l)
 if [ "$PENDING_COUNT" -gt 0 ]; then
   echo "【公開待ち (pending/)】$PENDING_COUNT 件 — /publish pending/[ファイル名] で公開できます"
@@ -44,7 +44,7 @@ if [ "$PENDING_COUNT" -gt 0 ]; then
   echo ""
 fi
 
-# パイプラインステータス（/autorun の実行結果）
+# パイプラインステータス（producer エージェントの実行結果）
 if [ -f "drafts/.pipeline-status.md" ]; then
   LAST_RUN=$(tail -5 "drafts/.pipeline-status.md")
   if echo "$LAST_RUN" | grep -q "公開準備完了"; then
@@ -59,7 +59,7 @@ if [ -f "drafts/.pipeline-status.md" ]; then
 fi
 
 echo "ワークフロー: /collect → /draft → /review → /publish"
-echo "   自動実行: /autorun（collect → draft → review を一括実行）"
+echo "   自動実行: @producer（researcher → writer → editor を一括実行）"
 echo "================================="
 
 exit 0
