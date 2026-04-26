@@ -7,6 +7,40 @@
 
 <!-- 収集データはここから下に追記されます -->
 
+## 2026-04-26 収集分
+
+### [Introducing Claude Opus 4.7](https://www.anthropic.com/news/claude-opus-4-7)
+- **情報源**: Anthropic 公式ニュース
+- **公開日**: 2026-04-16
+- **要点**: AnthropicがClaude Opus 4.7を正式リリースした。高度なソフトウェアエンジニアリングタスクでOpus 4.6を大幅に上回り、特に難易度の高いコーディング作業を監督なしで完遂できる。画像認識の解像度も向上し、プロフェッショナルな成果物（UI・スライド・ドキュメント）の品質が改善された。また、セキュリティ能力の制御実験としてサイバー攻撃関連のリクエストを自動検出・ブロックする安全機構が初めて搭載された。
+- **記事化候補**: Yes
+
+### [Introducing GPT-5.5](https://openai.com/index/introducing-gpt-5-5)
+- **情報源**: OpenAI 公式ブログ
+- **公開日**: 2026-04-23
+- **要点**: OpenAIがGPT-5.5をリリースした。Terminal-Bench 2.0で82.7%、OSWorld-Verifiedで78.7%と複数のエージェントベンチマークで最高水準を記録し、GPT-5.4比でトークン効率も向上した。コーディング・コンピュータ操作・知識業務に強みがあり、Codex上でも85%以上のOpenAI社員が週次利用しているという。APIも近日公開予定。
+- **記事化候補**: Yes
+
+### [Introducing workspace agents in ChatGPT](https://openai.com/index/workspace-agents-in-chatgpt)
+- **情報源**: OpenAI 公式ブログ
+- **公開日**: 2026-04-22
+- **要点**: OpenAIがChatGPTにワークスペースエージェント機能を追加した。ユーザーのワークスペース内のツール・データ・ファイルに接続したエージェントを作成・共有でき、チーム全体でAIエージェントを活用するための基盤となる。企業での自動化ワークフロー構築を大幅に簡略化する。
+- **記事化候補**: Yes
+
+### [DeepSeek-V4: a million-token context that agents can actually use](https://huggingface.co/blog/deepseekv4)
+- **情報源**: Hugging Face Blog
+- **公開日**: 2026-04-24
+- **要点**: DeepSeekが1Mトークンコンテキストを持つDeepSeek-V4（Pro: 1.6Tパラメータ/49Bアクティブ、Flash: 284B/13Bアクティブ）をリリースした。CSA・HCAという2種の注意機構を組み合わせてKVキャッシュをGQA比で約2%まで削減し、長時間エージェントタスクに対応した。ツール呼び出しをまたいだ推論継続や専用トークンによるツール呼び出しスキーマも導入され、エージェントワークフロー向けの設計となっている。
+- **記事化候補**: Yes
+
+### [Inside VAKRA: Reasoning, Tool Use, and Failure Modes of Agents](https://huggingface.co/blog/vakra-benchmark-analysis)
+- **情報源**: Hugging Face Blog
+- **公開日**: 2026-04-15
+- **要点**: VAKRAは、LLMエージェントの推論・ツール使用・失敗パターンを詳細に分析するベンチマーク。現行のフロンティアモデルにおけるエージェント的失敗モード（ツール選択ミス・ループ・コンテキスト飽和）を体系的に分類し、今後のエージェント改善指針を示している。
+- **記事化候補**: Yes（エージェント評価・研究観点の記事として）
+
+---
+
 ## 2026-04-15 収集分
 
 ### [Claude CodeにRoutines機能が追加 — バグ修正とコードレビューを自動化](https://the-decoder.com/claude-code-routines-let-ai-fix-bugs-and-review-code-on-autopilot/)

@@ -10,3 +10,4 @@ type: project
 ## 執筆履歴
 
 - 2026-04-15: 2026年4月前半のAIエージェント最新ニュース5選 — Claude Code Routines, Gemma 4, Holo3, エージェント自動化
+- 2026-04-26: GPT-5.5とClaude Opus 4.7が塗り替えたエージェントAIの実力基準 — GPT-5.5, Claude Opus 4.7, エージェントベンチマーク, DeepSeek-V4, Terminal-Bench, OSWorld
