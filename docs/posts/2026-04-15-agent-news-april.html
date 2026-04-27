@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>2026年4月前半のAIエージェント最新ニュース5選——自動化・効率化・信頼性の動向 - Agent Blog</title>
+  <meta name="description" content="Claude Code Routines追加・Gemma 4リリースなど、4月前半のAIエージェント注目ニュース5件をまとめました。">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600&family=Noto+Sans+JP:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #080e1a;
+      --bg2: #0b1422;
+      --surface: #0f1928;
+      --surface2: #152236;
+      --border: rgba(100,160,255,0.1);
+      --border-bright: rgba(100,180,255,0.22);
+      --accent:  #4c9eff;
+      --accent2: #38e8b0;
+      --accent3: #a78bfa;
+      --accent4: #f59e0b;
+      --text: #e0eeff;
+      --muted: #5a7a9a;
+      --muted2: #8aadcc;
+      --font-en: 'Space Grotesk', sans-serif;
+      --font-ja: 'Noto Sans JP', sans-serif;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-ja);
+      line-height: 1.8;
+      overflow-x: hidden;
+    }
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background:
+        radial-gradient(ellipse 80% 50% at 10% 0%, rgba(30,80,180,0.28) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 40% at 90% 20%, rgba(30,200,140,0.18) 0%, transparent 55%),
+        radial-gradient(ellipse 50% 60% at 50% 80%, rgba(60,100,220,0.15) 0%, transparent 60%);
+      pointer-events: none; z-index: 0;
+    }
+    nav {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(8,14,26,0.82);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border-bright);
+    }
+    .nav-inner {
+      max-width: 860px; margin: 0 auto;
+      padding: 0 2rem;
+      display: flex; align-items: center; justify-content: space-between;
+      height: 54px;
+    }
+    .nav-logo {
+      font-family: var(--font-en); font-weight: 600; font-size: 1rem;
+      color: var(--text); text-decoration: none;
+      display: flex; align-items: center; gap: 9px;
+    }
+    .nav-logo-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--accent2);
+      box-shadow: 0 0 8px var(--accent2);
+    }
+    .back-link {
+      font-size: .83rem; color: var(--muted2); text-decoration: none;
+      display: inline-flex; align-items: center; gap: 5px;
+      transition: color .2s;
+    }
+    .back-link:hover { color: var(--text); }
+    .container {
+      max-width: 860px; margin: 0 auto;
+      padding: 3rem 2rem 5rem;
+      position: relative; z-index: 1;
+    }
+    .post-header { margin-bottom: 2.5rem; }
+    .post-date {
+      font-family: var(--font-en); font-size: .75rem;
+      color: var(--muted); margin-bottom: 1rem;
+    }
+    .post-title {
+      font-family: var(--font-ja);
+      font-size: clamp(1.5rem, 4vw, 2.2rem);
+      font-weight: 500; line-height: 1.45;
+      color: var(--text); margin-bottom: 1rem;
+    }
+    .post-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 1.5rem; }
+    .tag {
+      font-family: var(--font-en); font-size: .62rem; padding: .2em .65em;
+      background: rgba(76,158,255,.08); color: #6ab4ff;
+      border-radius: 4px; border: 1px solid rgba(76,158,255,.18);
+    }
+    .post-summary {
+      font-size: .95rem; color: var(--muted2); line-height: 1.8;
+      border-left: 3px solid var(--accent); padding-left: 1rem;
+    }
+    .post-body { margin-top: 2.5rem; }
+    .post-body h2 {
+      font-size: 1.35rem; font-weight: 500; color: var(--text);
+      margin: 2.5rem 0 1rem;
+      padding-bottom: .4rem;
+      border-bottom: 1px solid var(--border-bright);
+    }
+    .post-body h3 {
+      font-size: 1.1rem; font-weight: 500; color: var(--text);
+      margin: 1.8rem 0 .7rem;
+    }
+    .post-body h4 {
+      font-size: .95rem; font-weight: 500; color: var(--muted2);
+      margin: 1.4rem 0 .5rem;
+    }
+    .post-body p { margin-bottom: 1.2rem; color: var(--muted2); font-size: .95rem; }
+    .post-body strong { color: var(--text); font-weight: 500; }
+    .post-body a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+    .post-body ul, .post-body ol {
+      margin: 1rem 0 1.2rem 1.5rem; color: var(--muted2); font-size: .95rem;
+    }
+    .post-body li { margin-bottom: .4rem; }
+    .post-body code {
+      background: rgba(76,158,255,.08); color: #7dd3fc;
+      padding: .15em .45em; border-radius: 4px;
+      font-family: 'Consolas', 'Menlo', monospace; font-size: .88em;
+    }
+    .post-body pre {
+      background: rgba(10,20,40,.8);
+      border: 1px solid var(--border-bright);
+      border-radius: 10px; padding: 1.25rem 1.5rem;
+      overflow-x: auto; margin: 1.2rem 0;
+    }
+    .post-body pre code {
+      background: none; padding: 0; color: #a5d6f8; font-size: .87rem;
+    }
+    .post-body hr {
+      border: none; border-top: 1px solid var(--border);
+      margin: 2rem 0;
+    }
+    footer { border-top: 1px solid var(--border); padding: 2rem; margin-top: 3rem; }
+    .footer-inner {
+      max-width: 860px; margin: 0 auto;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .footer-text { font-size: .8rem; color: var(--muted); }
+    @media (max-width:520px) { .container { padding: 2rem 1.25rem 3rem; } }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <a href="../index.html" class="nav-logo"><span class="nav-logo-dot"></span>Agent Blog</a>
+    <a href="../index.html" class="back-link">← 記事一覧</a>
+  </div>
+</nav>
+
+<div class="container">
+  <article>
+    <header class="post-header">
+      <div class="post-date">2026-04-15</div>
+      <h1 class="post-title">2026年4月前半のAIエージェント最新ニュース5選——自動化・効率化・信頼性の動向</h1>
+      <div class="post-tags"><span class="tag">agent</span><span class="tag">ai</span><span class="tag">workflow</span><span class="tag">tool</span></div>
+      <p class="post-summary">Claude Code Routines追加・Gemma 4リリースなど、4月前半のAIエージェント注目ニュース5件をまとめました。</p>
+    </header>
+    <div class="post-body">
+<h2>はじめに</h2>
+<p>2026年4月は、AIエージェント（自律的にタスクをこなすAIシステム）に関する注目のアップデートが相次ぎました。コーディング支援ツールの自動化機能、軽量で高性能な新モデルのリリース、エージェントの記憶や観測性を高める研究成果など、現場での活用に直結するニュースが揃っています。今回はその中から5件をピックアップして紹介します。</p>
+<h2>Claude CodeにRoutines機能が追加 — 定型作業を自動化</h2>
+<p>Anthropicが提供するコーディング支援ツール「Claude Code」に、「Routines（ルーティン）」と呼ばれる自動実行機能が<a href="https://the-decoder.com/claude-code-routines-let-ai-fix-bugs-and-review-code-on-autopilot/" target="_blank" rel="noopener">追加されました</a>。これは、あらかじめ設定した条件をトリガー（実行のきっかけ）にして、AIが自動でコーディングタスクをこなす仕組みです。</p>
+<p>トリガーとして使えるのは次の3種類です。</p>
+<ul>
+<li>スケジュール（毎朝9時など、時間指定）</li>
+<li>GitHub Events（プルリクエスト作成やコミットなど、開発作業の出来事）</li>
+<li>API呼び出し（外部システムからの指示）</li>
+</ul>
+<p>ポイントは、タスクがユーザーのパソコン上ではなく、Anthropicのサーバー上で実行される点です。つまり、自分のパソコンを起動していなくても、バグ修正やコードレビューが自動で進みます。利用できる回数はプランによって異なり、1日あたり5〜25回の制限があります。繰り返し発生する定型的なコーディング作業を任せるのに向いています。</p>
+<h2>Gemma 4リリース — エージェント用途を意識したGoogleのオープンモデル</h2>
+<p>Google DeepMindが、オープンウェイトモデル（重みが公開されており誰でも利用・改変できるモデル）<a href="https://huggingface.co/blog/gemma4" target="_blank" rel="noopener">「Gemma 4」を4サイズで公開しました</a>。ライセンスはApache 2.0で、商用利用も自由に行えます。</p>
+<p>Gemma 4が特にエージェント用途向けとして設計されている点は以下のとおりです。</p>
+<ul>
+<li>ネイティブの関数呼び出し（外部ツールを直接呼び出す機能）</li>
+<li>構造化JSON出力（他のシステムが処理しやすい形式でデータを出力する機能）</li>
+<li>マルチモーダル入力（画像・音声・動画を同時に扱える機能）</li>
+</ul>
+<p>最大サイズである31Bモデル（パラメータ数が310億のモデル）は、HuggingFace Blogによるとリリース時点（2026年4月2日）のオープンモデルリーダーボード（性能比較ランキング）で世界第3位を記録していました。自社サーバーやクラウド上にモデルを置いてエージェントを構築したいチームにとって、選択肢の一つとなりそうです。</p>
+<h2>Holo3 — 小さくて高性能なコンピュータ操作モデル</h2>
+<p>HCompanyが公開した<a href="https://huggingface.co/blog/Hcompany/holo3" target="_blank" rel="noopener">「Holo3」</a>は、コンピュータの画面を見ながら操作するタスクに特化したモデルです。OSWorld-Verified（パソコン操作タスクの標準的な評価指標）で78.85%のスコアを達成しながら、パラメータ数（モデルの複雑さを示す数値）を10Bに抑えた点が注目されています。</p>
+<p>Holo3の訓練には「エージェント学習フライホイール」と呼ばれる手法が使われています。具体的には、合成ナビゲーションデータ（自動生成した操作データ）、強化学習（結果をもとにモデルを改善するアプローチ）、そしてドメイン外データ拡張（想定と異なる環境のデータも学習に使う技術）を組み合わせています。規模の小さいモデルでも、工夫次第でトップクラスの操作精度を実現できることを示した成果です。</p>
+<h2>ALTK-Evolve — 過去の経験を学習に生かす長期記憶フレームワーク</h2>
+<p>IBM Researchが発表した<a href="https://huggingface.co/blog/ibm-research/altk-evolve" target="_blank" rel="noopener">「ALTK-Evolve」</a>は、AIエージェントに長期記憶を持たせるための仕組みです。エージェントが過去に行った操作のログ（記録）を自動的に分析し、再利用できるガイドライン（行動方針）へと変換します。次に同じようなタスクが来たとき、そのガイドラインを参照することで、より適切な判断ができるようになります。</p>
+<p>AppWorld（アプリ操作タスクを評価するベンチマーク）での検証結果では、性能が50.0%から58.9%へ向上（+8.9%）しました。特に難易度の高いタスクでは+14.2%の改善が確認されています。MCP（AIエージェントと外部ツールをつなぐ規格）を通じた接続にも対応しており、既存のエージェント構成に組み込みやすい設計になっています。</p>
+<h2>OpenTelemetryで始めるエージェントワークフローの分散トレーシング</h2>
+<p>マルチエージェント構成（複数のエージェントが役割を分担して連携する仕組み）では、どのエージェントがどの処理を行ったかを追跡するのが難しくなります。<a href="https://developers.redhat.com/articles/2026/04/06/distributed-tracing-agentic-workflows-opentelemetry" target="_blank" rel="noopener">Red Hatの技術ブログ</a>では、この課題に対して「分散トレーシング（複数のシステムにまたがる処理の流れを記録・可視化する技術）」を活用する方法が解説されました。</p>
+<p>使用するのはOSSの計装フレームワーク「OpenTelemetry（オープンテレメトリ）」です。具体的には次のような内容が紹介されています。</p>
+<ul>
+<li>ルーティングエージェントと専門エージェント間でのコンテキスト伝播（処理の文脈を引き継ぐ仕組み）</li>
+<li>FastAPI（Pythonの高速Webフレームワーク）の自動計装</li>
+<li>MCPサーバーへの手動計装の追加方法</li>
+</ul>
+<p>注意点は、すべての計装を自動化できるわけではなく、MCPサーバーのように手動で対応が必要なコンポーネントも存在する点です。エージェントの数が増えるほどデバッグは複雑になるため、早い段階からトレーシングの仕組みを整えることが重要です。</p>
+<h2>まとめ</h2>
+<p>今月のニュースからは、AIエージェントの「自動化」「効率化」「信頼性向上」という3つの方向性が見えてきます。Claude CodeのRoutinesは定型作業の自律実行を現実にし、Gemma 4やHolo3は小さなモデルで大きな成果を出す可能性を示しました。ALTK-Evolveはエージェントがタスクをこなすたびに賢くなる仕組みを提案し、OpenTelemetryの活用事例は複雑な構成を安全に運用するための実践的な指針を示しています。これらの動向を組み合わせながら、自分たちのワークフローに取り入れていきましょう。</p>
+    </div>
+  </article>
+</div>
+
+<footer>
+  <div class="footer-inner">
+    <span class="footer-text">Claude Code のエージェント機能で半自動生成しています</span>
+    <a href="../index.html" class="back-link">← 記事一覧に戻る</a>
+  </div>
+</footer>
+
+</body>
+</html>
