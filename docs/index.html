@@ -3,39 +3,713 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Agent Blog — エージェントAIの活用術と最新動向</title>
+  <title>Agent Blog — AIエージェント最前線</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600&family=Noto+Sans+JP:wght@300;400;500&display=swap" rel="stylesheet">
   <style>
-    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; max-width: 760px; margin: 0 auto; padding: 2rem 1rem; color: #1a1a1a; line-height: 1.7; }
-    h1 { font-size: 1.5rem; font-weight: 600; margin-bottom: 0.25rem; }
-    .tagline { color: #666; font-size: 0.95rem; margin-bottom: 2.5rem; }
-    .post-list { list-style: none; padding: 0; }
-    .post-list li { border-top: 1px solid #eee; padding: 1rem 0; }
-    .post-list li:last-child { border-bottom: 1px solid #eee; }
-    .post-date { font-size: 0.8rem; color: #999; margin-bottom: 0.2rem; }
-    .post-title a { text-decoration: none; color: #1a1a1a; font-weight: 500; }
-    .post-title a:hover { color: #0066cc; }
-    .post-summary { font-size: 0.9rem; color: #555; margin-top: 0.2rem; }
-    .tags { margin-top: 0.4rem; }
-    .tag { display: inline-block; font-size: 0.75rem; background: #f0f0f0; color: #555; padding: 1px 8px; border-radius: 3px; margin-right: 4px; }
-    footer { margin-top: 3rem; padding-top: 1rem; border-top: 1px solid #eee; font-size: 0.85rem; color: #999; }
+    :root {
+      --bg: #080e1a;
+      --bg2: #0b1422;
+      --surface: #0f1928;
+      --surface2: #152236;
+      --border: rgba(100,160,255,0.1);
+      --border-bright: rgba(100,180,255,0.22);
+      --accent:  #4c9eff;
+      --accent2: #38e8b0;
+      --accent3: #a78bfa;
+      --accent4: #f59e0b;
+      --text: #e0eeff;
+      --muted: #5a7a9a;
+      --muted2: #8aadcc;
+      --font-en: 'Space Grotesk', sans-serif;
+      --font-ja: 'Noto Sans JP', sans-serif;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-ja);
+      line-height: 1.75;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background:
+        radial-gradient(ellipse 80% 50% at 10% 0%, rgba(30,80,180,0.28) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 40% at 90% 20%, rgba(30,200,140,0.18) 0%, transparent 55%),
+        radial-gradient(ellipse 50% 60% at 50% 80%, rgba(60,100,220,0.15) 0%, transparent 60%);
+      pointer-events: none; z-index: 0;
+    }
+
+    body::after {
+      content: '';
+      position: fixed; inset: 0;
+      background-image:
+        linear-gradient(rgba(80,160,255,0.045) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(80,160,255,0.045) 1px, transparent 1px);
+      background-size: 56px 56px;
+      pointer-events: none; z-index: 0;
+    }
+
+    nav {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(8,14,26,0.82);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border-bright);
+    }
+
+    .nav-inner {
+      max-width: 1120px; margin: 0 auto;
+      padding: 0 2rem;
+      display: flex; align-items: center; justify-content: space-between;
+      height: 54px;
+    }
+
+    .nav-logo {
+      font-family: var(--font-en); font-weight: 600; font-size: 1rem;
+      color: var(--text); text-decoration: none;
+      display: flex; align-items: center; gap: 9px;
+    }
+
+    .nav-logo-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--accent2);
+      box-shadow: 0 0 8px var(--accent2);
+      animation: pulse 2.2s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%,100% { opacity:1; transform:scale(1); }
+      50%      { opacity:.5; transform:scale(.82); }
+    }
+
+    .nav-links { display: flex; gap: 1.5rem; list-style: none; }
+    .nav-links a { font-size:.84rem; color:var(--muted2); text-decoration:none; transition:color .2s; }
+    .nav-links a:hover { color:var(--text); }
+
+    header {
+      position: relative;
+      padding: 5.5rem 2rem 4.5rem;
+      max-width: 1120px; margin: 0 auto; z-index: 1;
+    }
+
+    .header-eyebrow {
+      font-family: var(--font-en); font-size: .7rem; letter-spacing: .22em;
+      text-transform: uppercase; color: var(--accent2);
+      margin-bottom: 1.2rem;
+      display: flex; align-items: center; gap: .6rem;
+    }
+
+    .header-eyebrow::before {
+      content: ''; display: inline-block;
+      width: 28px; height: 1px;
+      background: linear-gradient(90deg, var(--accent2), transparent);
+    }
+
+    h1 {
+      font-family: var(--font-en);
+      font-size: clamp(2.6rem, 6vw, 4.8rem);
+      font-weight: 600; letter-spacing: -.035em; line-height: 1.05;
+      background: linear-gradient(135deg, #fff 10%, #7dd3fc 50%, #34d399 90%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+      margin-bottom: 1rem;
+    }
+
+    .header-sub { font-size: 1rem; color: var(--muted2); max-width: 500px; line-height: 1.75; }
+
+    .container { max-width: 1120px; margin: 0 auto; padding: 0 2rem; position: relative; z-index: 1; }
+
+    .section-header { display: flex; align-items: baseline; gap: 1rem; margin-bottom: 2rem; }
+
+    .section-label {
+      font-family: var(--font-en); font-size: .63rem; letter-spacing: .18em;
+      text-transform: uppercase; color: var(--muted2);
+      padding: .25em .75em; border: 1px solid var(--border-bright); border-radius: 4px;
+    }
+
+    .section-title { font-family: var(--font-en); font-size: 1.35rem; font-weight: 500; color: var(--text); }
+
+    /* Featured */
+    .featured-section { margin-bottom: 5rem; }
+
+    .featured-card {
+      background: linear-gradient(135deg, rgba(15,25,40,.95) 0%, rgba(18,35,58,.95) 100%);
+      border: 1px solid var(--border-bright); border-radius: 18px; overflow: hidden;
+      display: grid; grid-template-columns: 1fr 380px;
+      transition: border-color .3s, box-shadow .3s;
+    }
+    .featured-card:hover {
+      border-color: rgba(76,158,255,.45);
+      box-shadow: 0 0 40px rgba(76,158,255,.08);
+    }
+
+    .featured-content { padding: 3rem; display: flex; flex-direction: column; justify-content: space-between; }
+
+    .post-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-family: var(--font-en); font-size: .63rem; letter-spacing: .15em; text-transform: uppercase;
+      padding: .3em .85em; border-radius: 100px; margin-bottom: 1.5rem;
+    }
+    .badge-new { background: rgba(56,232,176,.1); color: #5af0c0; border: 1px solid rgba(56,232,176,.25); }
+    .badge-dot { width:5px; height:5px; border-radius:50%; background:currentColor; }
+
+    .featured-title { font-family: var(--font-ja); font-size: 1.5rem; font-weight: 500; line-height: 1.55; color: var(--text); margin-bottom: 1rem; }
+    .featured-summary { font-size: .9rem; color: var(--muted2); line-height: 1.8; margin-bottom: 2rem; }
+    .featured-meta { display: flex; align-items: center; justify-content: space-between; }
+    .post-date { font-family: var(--font-en); font-size: .75rem; color: var(--muted); }
+    .post-tags { display: flex; gap: 6px; flex-wrap: wrap; }
+
+    .tag {
+      font-family: var(--font-en); font-size: .62rem; padding: .2em .65em;
+      background: rgba(76,158,255,.08); color: #6ab4ff;
+      border-radius: 4px; border: 1px solid rgba(76,158,255,.18);
+    }
+
+    .featured-visual {
+      background: linear-gradient(135deg, #0b1a30, #0e2240);
+      border-left: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      position: relative; overflow: hidden;
+    }
+
+    /* Post grid */
+    .posts-section { margin-bottom: 5rem; }
+
+    .posts-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(300px,1fr));
+      gap: 1px; background: var(--border-bright);
+      border: 1px solid var(--border-bright); border-radius: 14px; overflow: hidden;
+    }
+
+    .post-card { background: var(--surface); padding: 1.75rem; text-decoration: none; display: flex; flex-direction: column; gap: .75rem; transition: background .2s; }
+    .post-card:hover { background: var(--surface2); }
+    .post-card-date { font-family: var(--font-en); font-size: .72rem; color: var(--muted); }
+    .post-card-title { font-size: .95rem; font-weight: 500; color: var(--text); line-height: 1.6; }
+    .post-card-summary { font-size: .82rem; color: var(--muted2); line-height: 1.75; }
+    .post-card-footer { margin-top: auto; padding-top: .75rem; border-top: 1px solid var(--border); display: flex; flex-wrap: wrap; gap: 5px; }
+
+    /* AI Basics */
+    .basics-section { margin-bottom: 5rem; }
+    .basics-intro { font-size: .9rem; color: var(--muted2); margin-bottom: 2.5rem; max-width: 620px; }
+
+    .term-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(250px,1fr));
+      gap: 1px; background: var(--border-bright);
+      border: 1px solid var(--border-bright); border-radius: 14px; overflow: hidden;
+      margin-bottom: 3rem;
+    }
+
+    .term-card { background: var(--surface); padding: 1.5rem; transition: background .2s; }
+    .term-card:hover { background: var(--surface2); }
+
+    .term-icon { width: 38px; height: 38px; border-radius: 9px; margin-bottom: .8rem; display: flex; align-items: center; justify-content: center; font-size: 17px; }
+    .term-name { font-family: var(--font-en); font-size: .8rem; letter-spacing: .05em; font-weight: 500; color: var(--text); margin-bottom: .3rem; }
+    .term-ja { font-size: .74rem; color: var(--muted); margin-bottom: .7rem; }
+    .term-desc { font-size: .82rem; color: var(--muted2); line-height: 1.72; }
+
+    /* Steps */
+    .steps-section { margin-bottom: 5rem; }
+
+    .steps-grid {
+      display: grid; grid-template-columns: repeat(4,1fr);
+      gap: 1px; background: var(--border-bright);
+      border: 1px solid var(--border-bright); border-radius: 14px; overflow: hidden;
+    }
+
+    .step-item { background: var(--surface); padding: 1.75rem; }
+    .step-num { font-family: var(--font-en); font-size: 2.4rem; font-weight: 600; color: rgba(76,158,255,.18); line-height: 1; margin-bottom: 1rem; }
+    .step-title { font-size: .9rem; font-weight: 500; color: var(--text); margin-bottom: .5rem; }
+    .step-desc { font-size: .8rem; color: var(--muted2); line-height: 1.72; }
+
+    /* Architecture */
+    .diagram-section { margin-bottom: 5rem; }
+
+    .diagram-wrap {
+      background: linear-gradient(160deg, rgba(12,22,40,.98) 0%, rgba(10,20,38,.98) 100%);
+      border: 1px solid var(--border-bright); border-radius: 18px; overflow: hidden;
+    }
+
+    .diagram-header {
+      padding: 1.25rem 2rem; border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; gap: .8rem;
+    }
+    .diagram-title { font-family: var(--font-en); font-size: .84rem; font-weight: 500; color: var(--muted2); }
+    .diagram-body { padding: 2rem 1.5rem 2.5rem; overflow-x: auto; }
+
+    .advantage-row { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 3rem; }
+
+    .advantage-chip {
+      display: flex; align-items: center; gap: 8px;
+      background: rgba(56,232,176,.06); border: 1px solid rgba(56,232,176,.18);
+      border-radius: 8px; padding: .55rem 1rem;
+    }
+    .chip-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent2); flex-shrink: 0; }
+    .chip-text { font-size: .8rem; color: var(--muted2); }
+    .chip-text strong { color: var(--text); font-weight: 500; }
+
+    footer { border-top: 1px solid var(--border); padding: 2rem; }
+    .footer-inner { max-width: 1120px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; }
+    .footer-text { font-size: .8rem; color: var(--muted); }
+    .footer-link { font-family: var(--font-en); font-size: .8rem; color: var(--accent); text-decoration: none; }
+
+    @media (max-width:860px) { .featured-card { grid-template-columns:1fr; } .featured-visual { display:none; } .steps-grid { grid-template-columns:1fr 1fr; } }
+    @media (max-width:520px) { header { padding:3rem 1.25rem 2rem; } .container { padding:0 1.25rem; } .steps-grid { grid-template-columns:1fr; } }
   </style>
 </head>
 <body>
+
+<nav>
+  <div class="nav-inner">
+    <a href="#" class="nav-logo"><span class="nav-logo-dot"></span>Agent Blog</a>
+    <ul class="nav-links">
+      <li><a href="#posts">記事</a></li>
+      <li><a href="#basics">AI基礎</a></li>
+      <li><a href="#howit">仕組み</a></li>
+      <li><a href="#arch">アーキテクチャ</a></li>
+    </ul>
+  </div>
+</nav>
+
+<header>
+  <p class="header-eyebrow">AI Agent Intelligence</p>
   <h1>Agent Blog</h1>
-  <p class="tagline">エージェントAIの活用術と最新動向</p>
+  <p class="header-sub">AIエージェントの最前線を追う。最新ニュース・技術解説・実践事例を Claude Code で半自動生成。</p>
+</header>
 
-  <ul class="post-list" id="post-list">
-    <li>
-      <div class="post-date">2026-04-15</div>
-      <div class="post-title"><a href="posts/2026-04-15-agent-news-april.md">2026年4月前半のAIエージェント最新ニュース5選——自動化・効率化・信頼性の動向</a></div>
-      <div class="post-summary">Claude Code Routines追加・Gemma 4リリースなど、4月前半のAIエージェント注目ニュース5件をまとめました。</div>
-      <div class="tags"><span class="tag">agent</span><span class="tag">ai</span><span class="tag">workflow</span><span class="tag">tool</span></div>
-    </li>
-  </ul>
+<div class="container">
 
-  <footer>
-    Claude Codeのエージェント機能で半自動生成しています。
-    <a href="https://github.com/Bild739/agent-blog">GitHub</a>
-  </footer>
+  <!-- Featured -->
+  <section class="featured-section" id="posts">
+    <div class="section-header">
+      <span class="section-label">Latest</span>
+      <span class="section-title">最新記事</span>
+    </div>
+    <a href="posts/2026-04-26-frontier-models-agent-benchmark-2026.md" style="text-decoration:none">
+      <div class="featured-card">
+        <div class="featured-content">
+          <div>
+            <span class="post-badge badge-new"><span class="badge-dot"></span>New</span>
+            <h2 class="featured-title">GPT-5.5とClaude Opus 4.7が塗り替えたエージェントAIの実力基準</h2>
+            <p class="featured-summary">OpenAIのGPT-5.5とAnthropicのClaude Opus 4.7が相次いでリリースされ、AIエージェントの性能基準が大きく更新された。両モデルの特徴とエージェントタスクへの影響をまとめます。</p>
+          </div>
+          <div class="featured-meta">
+            <span class="post-date">2026-04-26</span>
+            <div class="post-tags">
+              <span class="tag">agent</span><span class="tag">llm</span><span class="tag">benchmark</span><span class="tag">news</span>
+            </div>
+          </div>
+        </div>
+        <div class="featured-visual">
+          <svg viewBox="0 0 380 280" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="b1" x1="0" x2="1" y1="0" y2="0">
+                <stop offset="0%" stop-color="#4c9eff"/><stop offset="100%" stop-color="#7dd3fc" stop-opacity=".6"/>
+              </linearGradient>
+              <linearGradient id="b2" x1="0" x2="1" y1="0" y2="0">
+                <stop offset="0%" stop-color="#38e8b0"/><stop offset="100%" stop-color="#6ee7b7" stop-opacity=".6"/>
+              </linearGradient>
+            </defs>
+            <line x1="60" y1="40" x2="60" y2="220" stroke="rgba(100,180,255,0.1)" stroke-width="1"/>
+            <line x1="60" y1="220" x2="340" y2="220" stroke="rgba(100,180,255,0.1)" stroke-width="1"/>
+            <line x1="60" y1="160" x2="340" y2="160" stroke="rgba(100,180,255,0.06)" stroke-width="1" stroke-dasharray="3 4"/>
+            <line x1="60" y1="110" x2="340" y2="110" stroke="rgba(100,180,255,0.06)" stroke-width="1" stroke-dasharray="3 4"/>
+            <rect x="80"  y="97"  width="28" height="123" rx="4" fill="url(#b1)" opacity=".9"/>
+            <rect x="160" y="103" width="28" height="117" rx="4" fill="url(#b1)" opacity=".9"/>
+            <rect x="240" y="90"  width="28" height="130" rx="4" fill="url(#b1)" opacity=".9"/>
+            <rect x="112" y="113" width="28" height="107" rx="4" fill="url(#b2)" opacity=".9"/>
+            <rect x="192" y="105" width="28" height="115" rx="4" fill="url(#b2)" opacity=".9"/>
+            <rect x="272" y="99"  width="28" height="121" rx="4" fill="url(#b2)" opacity=".9"/>
+            <text x="94"  y="240" text-anchor="middle" font-family="Space Grotesk,sans-serif" font-size="9" fill="rgba(180,220,255,0.4)">Terminal</text>
+            <text x="176" y="240" text-anchor="middle" font-family="Space Grotesk,sans-serif" font-size="9" fill="rgba(180,220,255,0.4)">OSWorld</text>
+            <text x="258" y="240" text-anchor="middle" font-family="Space Grotesk,sans-serif" font-size="9" fill="rgba(180,220,255,0.4)">GDPval</text>
+            <rect x="80"  y="18" width="8" height="8" rx="2" fill="#4c9eff"/>
+            <text x="92"  y="26" font-family="Space Grotesk,sans-serif" font-size="9" fill="rgba(180,220,255,0.6)">GPT-5.5</text>
+            <rect x="150" y="18" width="8" height="8" rx="2" fill="#38e8b0"/>
+            <text x="162" y="26" font-family="Space Grotesk,sans-serif" font-size="9" fill="rgba(180,220,255,0.6)">Claude Opus 4.7</text>
+            <text x="94"  y="93" text-anchor="middle" font-family="Space Grotesk,sans-serif" font-size="9" fill="#7dd3fc">82.7</text>
+            <text x="126" y="109" text-anchor="middle" font-family="Space Grotesk,sans-serif" font-size="9" fill="#6ee7b7">69.4</text>
+          </svg>
+        </div>
+      </div>
+    </a>
+  </section>
+
+  <!-- Post list -->
+  <section class="posts-section">
+    <div class="posts-grid">
+      <a href="posts/2026-04-26-frontier-models-agent-benchmark-2026.md" class="post-card">
+        <div class="post-card-date">2026-04-26</div>
+        <div class="post-card-title">GPT-5.5とClaude Opus 4.7が塗り替えたエージェントAIの実力基準</div>
+        <div class="post-card-summary">OpenAIとAnthropicの最新フロンティアモデルが相次ぎリリース。ベンチマーク成績と実務への影響を解説。</div>
+        <div class="post-card-footer"><span class="tag">benchmark</span><span class="tag">agent</span><span class="tag">llm</span></div>
+      </a>
+      <a href="posts/2026-04-15-agent-news-april.md" class="post-card">
+        <div class="post-card-date">2026-04-15</div>
+        <div class="post-card-title">2026年4月前半のAIエージェント最新ニュース5選</div>
+        <div class="post-card-summary">Claude Code Routines追加・Gemma 4リリースなど、4月前半の注目ニュース5件をまとめました。</div>
+        <div class="post-card-footer"><span class="tag">news</span><span class="tag">workflow</span><span class="tag">tool</span></div>
+      </a>
+    </div>
+  </section>
+
+  <!-- AI Basics -->
+  <section class="basics-section" id="basics">
+    <div class="section-header">
+      <span class="section-label">AI Glossary</span>
+      <span class="section-title">AIエージェント 基礎用語</span>
+    </div>
+    <p class="basics-intro">初めてAIエージェントに触れる方へ。よく登場するキーワードをわかりやすく解説します。</p>
+
+    <div class="term-grid">
+      <div class="term-card">
+        <div class="term-icon" style="background:rgba(76,158,255,.12);">🤖</div>
+        <div class="term-name">AI Agent</div>
+        <div class="term-ja">AIエージェント</div>
+        <div class="term-desc">目標を与えると自分で計画を立て・ツールを使い・複数ステップのタスクを自律的にこなすAIシステム。「指示を受けて実行するだけ」のチャットAIと違い、判断と行動を繰り返します。</div>
+      </div>
+      <div class="term-card">
+        <div class="term-icon" style="background:rgba(167,139,250,.12);">🧠</div>
+        <div class="term-name">LLM</div>
+        <div class="term-ja">大規模言語モデル</div>
+        <div class="term-desc">大量のテキストで学習した、言語を理解・生成するAIモデル。Claude・GPT・Geminiなどが代表例。エージェントの「頭脳」として機能します。</div>
+      </div>
+      <div class="term-card">
+        <div class="term-icon" style="background:rgba(56,232,176,.1);">🔧</div>
+        <div class="term-name">Tool Use</div>
+        <div class="term-ja">ツール呼び出し</div>
+        <div class="term-desc">LLMが外部の機能（検索・コード実行・ファイル操作など）を呼び出す仕組み。これによりAIは「会話するだけ」でなく、実際に作業を行えるようになります。</div>
+      </div>
+      <div class="term-card">
+        <div class="term-icon" style="background:rgba(245,158,11,.1);">🔄</div>
+        <div class="term-name">RAG</div>
+        <div class="term-ja">検索拡張生成</div>
+        <div class="term-desc">Retrieval-Augmented Generation の略。AIが回答を生成する前に外部データベースを検索し、最新情報を取得。LLMの「知識の古さ」問題を補完します。</div>
+      </div>
+      <div class="term-card">
+        <div class="term-icon" style="background:rgba(244,114,182,.1);">📋</div>
+        <div class="term-name">Context Window</div>
+        <div class="term-ja">コンテキストウィンドウ</div>
+        <div class="term-desc">LLMが一度に処理できる情報量の上限（トークン数）。最新モデルでは100万トークン超まで拡大しており、長大な会話や文書も扱えます。</div>
+      </div>
+      <div class="term-card">
+        <div class="term-icon" style="background:rgba(56,189,248,.1);">⚡</div>
+        <div class="term-name">MCP</div>
+        <div class="term-ja">モデルコンテキストプロトコル</div>
+        <div class="term-desc">AIモデルが外部ツールやデータソースに接続するための標準プロトコル（Anthropic 提案）。USB-C のように、AIと各サービスをプラグイン形式でつなげます。</div>
+      </div>
+      <div class="term-card">
+        <div class="term-icon" style="background:rgba(56,232,176,.12);">💾</div>
+        <div class="term-name">Memory</div>
+        <div class="term-ja">メモリ（記憶）</div>
+        <div class="term-desc">エージェントが過去の会話・作業内容・学習結果を保存・参照する仕組み。短期（コンテキスト内）と長期（外部ストレージ）があり、長期メモリでセッションをまたいだ学習が可能になります。</div>
+      </div>
+      <div class="term-card">
+        <div class="term-icon" style="background:rgba(245,158,11,.12);">📜</div>
+        <div class="term-name">Rules</div>
+        <div class="term-ja">ルール</div>
+        <div class="term-desc">エージェントが従うべき行動指針や制約を記述したファイル。「トーン・文体の統一」「禁止ワード」「出力フォーマット」などをあらかじめ定義し、品質と安全性を保ちます。</div>
+      </div>
+      <div class="term-card">
+        <div class="term-icon" style="background:rgba(76,158,255,.12);">📦</div>
+        <div class="term-name">Skills</div>
+        <div class="term-ja">スキル</div>
+        <div class="term-desc">エージェントが再利用できる「手順書」のようなもの。情報収集・記事執筆・公開などの処理をスキルとして定義しておき、必要な場面でエージェントが呼び出して使います。</div>
+      </div>
+      <div class="term-card">
+        <div class="term-icon" style="background:rgba(167,139,250,.12);">🪝</div>
+        <div class="term-name">Hooks</div>
+        <div class="term-ja">フック</div>
+        <div class="term-desc">エージェントの実行ライフサイクルの特定タイミング（開始前・ツール使用後など）に自動で割り込む処理。ログ記録・バリデーション・後処理などをコードで差し込めます。</div>
+      </div>
+      <div class="term-card">
+        <div class="term-icon" style="background:rgba(56,232,176,.1);">🤝</div>
+        <div class="term-name">Subagents</div>
+        <div class="term-ja">サブエージェント</div>
+        <div class="term-desc">オーケストレータ（指揮役）から委譲された特定のタスクを担当するエージェント。「調査担当」「執筆担当」などに専門化することで、複雑なワークフローを並列・分業で処理できます。</div>
+      </div>
+      <div class="term-card">
+        <div class="term-icon" style="background:rgba(76,158,255,.1);">👥</div>
+        <div class="term-name">Agent Teams</div>
+        <div class="term-ja">エージェントチーム</div>
+        <div class="term-desc">複数のエージェントがそれぞれの専門役割を担い、協調して一つの目標を達成する構成。オーケストレータがタスクを振り分け、並列実行や依存関係の管理も行います。</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- How it works -->
+  <section class="steps-section" id="howit">
+    <div class="section-header">
+      <span class="section-label">How It Works</span>
+      <span class="section-title">AIエージェントの動き方</span>
+    </div>
+    <p class="basics-intro" style="margin-bottom:2rem">「ゴールを伝えたら、あとは自動でやってくれる」——その裏側で何が起きているのか、4ステップで見てみましょう。</p>
+    <div class="steps-grid">
+      <div class="step-item">
+        <div class="step-num">01</div>
+        <div class="step-title">指示の受け取り</div>
+        <div class="step-desc">ユーザーから目標やタスクを受け取り、LLMが内容を解釈。あいまいな指示でも文脈から意図を推定します。</div>
+      </div>
+      <div class="step-item">
+        <div class="step-num">02</div>
+        <div class="step-title">計画の立案</div>
+        <div class="step-desc">目標をサブタスクに分割し実行順序を決定。ReActやChain-of-Thoughtなどの推論手法を活用します。</div>
+      </div>
+      <div class="step-item">
+        <div class="step-num">03</div>
+        <div class="step-title">ツールの実行</div>
+        <div class="step-desc">検索・コード実行・API呼び出し・ファイル操作など、必要なツールを選択して実行。結果をフィードバックとして受け取ります。</div>
+      </div>
+      <div class="step-item">
+        <div class="step-num">04</div>
+        <div class="step-title">評価と反復</div>
+        <div class="step-desc">実行結果をもとにゴール達成を確認。不十分な場合は計画を修正して再実行。目標まで自律的にループします。</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Architecture -->
+  <section class="diagram-section" id="arch">
+    <div class="section-header">
+      <span class="section-label">Architecture</span>
+      <span class="section-title">このブログの仕組み — エージェントチームアーキテクチャ</span>
+    </div>
+
+    <p class="basics-intro" style="margin-bottom:1.5rem">
+      Agent Blog は <strong style="color:var(--text)">オーケストレータ（Producer）</strong> が複数の専門サブエージェントを指揮する
+      <strong style="color:var(--text)">エージェントチーム</strong> 構成で動いています。
+      各エージェントはスキル・ルール・フックを組み合わせて動作し、AutoMemory で継続的に学習します。
+    </p>
+
+    <div class="advantage-row">
+      <div class="advantage-chip">
+        <span class="chip-dot"></span>
+        <span class="chip-text"><strong>並列処理</strong>で高速化 — 複数タスクを同時実行</span>
+      </div>
+      <div class="advantage-chip">
+        <span class="chip-dot"></span>
+        <span class="chip-text"><strong>専門化</strong>による品質向上 — 役割ごとに最適化</span>
+      </div>
+      <div class="advantage-chip">
+        <span class="chip-dot"></span>
+        <span class="chip-text"><strong>スケーラブル</strong> — エージェントを増やすだけで拡張</span>
+      </div>
+      <div class="advantage-chip">
+        <span class="chip-dot"></span>
+        <span class="chip-text"><strong>自律的な学習</strong> — AutoMemory が経験を蓄積</span>
+      </div>
+    </div>
+
+    <div class="diagram-wrap">
+      <div class="diagram-header">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+          <circle cx="7" cy="7" r="6" stroke="rgba(100,180,255,.3)" stroke-width="1"/>
+          <circle cx="7" cy="7" r="2.5" fill="#4c9eff"/>
+        </svg>
+        <span class="diagram-title">Agent Blog — エージェントチーム全体像</span>
+      </div>
+      <div class="diagram-body">
+        <svg width="100%" viewBox="0 0 900 620" xmlns="http://www.w3.org/2000/svg" role="img">
+          <title>Agent Blogエージェントチームアーキテクチャ図</title>
+          <desc>Producerオーケストレータが4つのサブエージェントを管理し、スキル・ルール・フック・AutoMemoryと連携する構成図</desc>
+          <defs>
+            <marker id="arw" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto">
+              <path d="M2 2L8 5L2 8" fill="none" stroke="#4c9eff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </marker>
+            <marker id="arw-g" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto">
+              <path d="M2 2L8 5L2 8" fill="none" stroke="#38e8b0" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </marker>
+            <marker id="arw-y" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto">
+              <path d="M2 2L8 5L2 8" fill="none" stroke="#f59e0b" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </marker>
+            <marker id="arw-p" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto">
+              <path d="M2 2L8 5L2 8" fill="none" stroke="#a78bfa" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </marker>
+          </defs>
+
+          <!-- USER INPUT -->
+          <rect x="350" y="18" width="200" height="46" rx="10"
+            fill="rgba(76,158,255,.1)" stroke="rgba(76,158,255,.35)" stroke-width="1"/>
+          <text x="450" y="38" text-anchor="middle"
+            font-family="Space Grotesk,sans-serif" font-size="12" fill="#7dd3fc" font-weight="500">User Input</text>
+          <text x="450" y="56" text-anchor="middle"
+            font-family="Noto Sans JP,sans-serif" font-size="10" fill="rgba(130,180,255,.5)">ゴール・テーマを入力</text>
+
+          <!-- user → orchestrator -->
+          <line x1="450" y1="65" x2="450" y2="97" stroke="#4c9eff" stroke-width="1.2" stroke-opacity=".6" marker-end="url(#arw)"/>
+
+          <!-- ORCHESTRATOR OUTER BOX -->
+          <rect x="100" y="102" width="700" height="130" rx="14"
+            fill="rgba(76,158,255,.04)" stroke="rgba(76,158,255,.35)" stroke-width="1.5"/>
+          <rect x="114" y="95" width="168" height="18" rx="4" fill="#080e1a"/>
+          <text x="198" y="107" text-anchor="middle"
+            font-family="Space Grotesk,sans-serif" font-size="10" fill="#4c9eff" font-weight="500" letter-spacing=".08em">ORCHESTRATOR</text>
+
+          <!-- Producer node -->
+          <rect x="290" y="120" width="320" height="56" rx="10"
+            fill="rgba(76,158,255,.12)" stroke="rgba(76,158,255,.45)" stroke-width="1"/>
+          <text x="450" y="145" text-anchor="middle"
+            font-family="Space Grotesk,sans-serif" font-size="13" fill="#7dd3fc" font-weight="600">Producer</text>
+          <text x="450" y="164" text-anchor="middle"
+            font-family="Noto Sans JP,sans-serif" font-size="10" fill="rgba(130,200,255,.55)">サブエージェントへタスクを割り当て・統括</text>
+
+          <!-- Rules badge -->
+          <rect x="118" y="128" width="136" height="38" rx="8"
+            fill="rgba(245,158,11,.07)" stroke="rgba(245,158,11,.3)" stroke-width="1"/>
+          <text x="186" y="144" text-anchor="middle"
+            font-family="Space Grotesk,sans-serif" font-size="11" fill="#fbbf24" font-weight="500">📜 Rules</text>
+          <text x="186" y="159" text-anchor="middle"
+            font-family="Noto Sans JP,sans-serif" font-size="9" fill="rgba(250,200,80,.5)">tone / SEO / sources</text>
+          <line x1="254" y1="147" x2="288" y2="147" stroke="rgba(245,158,11,.3)" stroke-width="1" stroke-dasharray="3 3"/>
+
+          <!-- Hooks badge -->
+          <rect x="646" y="128" width="136" height="38" rx="8"
+            fill="rgba(167,139,250,.07)" stroke="rgba(167,139,250,.3)" stroke-width="1"/>
+          <text x="714" y="144" text-anchor="middle"
+            font-family="Space Grotesk,sans-serif" font-size="11" fill="#c4b0ff" font-weight="500">🪝 Hooks</text>
+          <text x="714" y="159" text-anchor="middle"
+            font-family="Noto Sans JP,sans-serif" font-size="9" fill="rgba(200,180,255,.5)">pre / post / session</text>
+          <line x1="612" y1="147" x2="644" y2="147" stroke="rgba(167,139,250,.3)" stroke-width="1" stroke-dasharray="3 3"/>
+
+          <!-- DISPATCH ARROWS orch → agents -->
+          <!-- to Researcher: x=160 -->
+          <path d="M 310 176 L 160 176 L 160 278" fill="none" stroke="#4c9eff" stroke-width="1" stroke-opacity=".5" marker-end="url(#arw)"/>
+          <!-- to Writer: x=340 -->
+          <path d="M 370 176 L 340 176 L 340 278" fill="none" stroke="#38e8b0" stroke-width="1" stroke-opacity=".5" marker-end="url(#arw-g)"/>
+          <!-- to Editor: x=520 -->
+          <path d="M 530 176 L 520 176 L 520 278" fill="none" stroke="#a78bfa" stroke-width="1" stroke-opacity=".5" marker-end="url(#arw-p)"/>
+          <!-- to Publisher: x=700 -->
+          <path d="M 590 176 L 700 176 L 700 278" fill="none" stroke="#f59e0b" stroke-width="1" stroke-opacity=".5" marker-end="url(#arw-y)"/>
+
+          <!-- SUBAGENT BOXES -->
+          <!-- Researcher -->
+          <rect x="80" y="278" width="160" height="64" rx="10"
+            fill="rgba(76,158,255,.09)" stroke="rgba(76,158,255,.38)" stroke-width="1"/>
+          <text x="160" y="305" text-anchor="middle"
+            font-family="Space Grotesk,sans-serif" font-size="12" fill="#7dd3fc" font-weight="500">Researcher</text>
+          <text x="160" y="323" text-anchor="middle"
+            font-family="Noto Sans JP,sans-serif" font-size="10" fill="rgba(130,190,255,.5)">情報収集・精査・整理</text>
+          <text x="160" y="336" text-anchor="middle"
+            font-family="Space Grotesk,sans-serif" font-size="9" fill="rgba(76,158,255,.35)">subagent</text>
+
+          <!-- Writer -->
+          <rect x="260" y="278" width="160" height="64" rx="10"
+            fill="rgba(56,232,176,.07)" stroke="rgba(56,232,176,.32)" stroke-width="1"/>
+          <text x="340" y="305" text-anchor="middle"
+            font-family="Space Grotesk,sans-serif" font-size="12" fill="#6ee7b7" font-weight="500">Writer</text>
+          <text x="340" y="323" text-anchor="middle"
+            font-family="Noto Sans JP,sans-serif" font-size="10" fill="rgba(100,230,180,.5)">記事執筆・構成</text>
+          <text x="340" y="336" text-anchor="middle"
+            font-family="Space Grotesk,sans-serif" font-size="9" fill="rgba(56,232,176,.35)">subagent</text>
+
+          <!-- Editor -->
+          <rect x="440" y="278" width="160" height="64" rx="10"
+            fill="rgba(167,139,250,.08)" stroke="rgba(167,139,250,.32)" stroke-width="1"/>
+          <text x="520" y="305" text-anchor="middle"
+            font-family="Space Grotesk,sans-serif" font-size="12" fill="#c4b0ff" font-weight="500">Editor</text>
+          <text x="520" y="323" text-anchor="middle"
+            font-family="Noto Sans JP,sans-serif" font-size="10" fill="rgba(200,180,255,.5)">品質確認・校正</text>
+          <text x="520" y="336" text-anchor="middle"
+            font-family="Space Grotesk,sans-serif" font-size="9" fill="rgba(167,139,250,.35)">subagent</text>
+
+          <!-- Publisher -->
+          <rect x="620" y="278" width="160" height="64" rx="10"
+            fill="rgba(245,158,11,.08)" stroke="rgba(245,158,11,.3)" stroke-width="1"/>
+          <text x="700" y="305" text-anchor="middle"
+            font-family="Space Grotesk,sans-serif" font-size="12" fill="#fcd34d" font-weight="500">Publisher</text>
+          <text x="700" y="323" text-anchor="middle"
+            font-family="Noto Sans JP,sans-serif" font-size="10" fill="rgba(250,210,80,.5)">HTML生成・公開</text>
+          <text x="700" y="336" text-anchor="middle"
+            font-family="Space Grotesk,sans-serif" font-size="9" fill="rgba(245,158,11,.35)">subagent</text>
+
+          <!-- AGENT → SKILL ARROWS -->
+          <line x1="160" y1="343" x2="160" y2="380" stroke="#4c9eff" stroke-width="1" stroke-opacity=".4" marker-end="url(#arw)"/>
+          <line x1="340" y1="343" x2="340" y2="380" stroke="#38e8b0" stroke-width="1" stroke-opacity=".4" marker-end="url(#arw-g)"/>
+          <line x1="520" y1="343" x2="520" y2="380" stroke="#a78bfa" stroke-width="1" stroke-opacity=".4" marker-end="url(#arw-p)"/>
+          <line x1="700" y1="343" x2="700" y2="380" stroke="#f59e0b" stroke-width="1" stroke-opacity=".4" marker-end="url(#arw-y)"/>
+
+          <!-- SKILL BOXES -->
+          <rect x="80"  y="380" width="160" height="38" rx="8" fill="rgba(76,158,255,.06)"  stroke="rgba(76,158,255,.22)"  stroke-width="1"/>
+          <text x="160" y="396" text-anchor="middle" font-family="Space Grotesk,sans-serif" font-size="10" fill="#4c9eff"  font-weight="500">📦 skill/collect</text>
+          <text x="160" y="411" text-anchor="middle" font-family="Noto Sans JP,sans-serif"  font-size="9"  fill="rgba(130,190,255,.4)">情報収集の手順書</text>
+
+          <rect x="260" y="380" width="160" height="38" rx="8" fill="rgba(56,232,176,.06)"  stroke="rgba(56,232,176,.2)"   stroke-width="1"/>
+          <text x="340" y="396" text-anchor="middle" font-family="Space Grotesk,sans-serif" font-size="10" fill="#38e8b0"  font-weight="500">📦 skill/draft</text>
+          <text x="340" y="411" text-anchor="middle" font-family="Noto Sans JP,sans-serif"  font-size="9"  fill="rgba(80,230,180,.4)">記事執筆の手順書</text>
+
+          <rect x="440" y="380" width="160" height="38" rx="8" fill="rgba(167,139,250,.06)" stroke="rgba(167,139,250,.2)"  stroke-width="1"/>
+          <text x="520" y="396" text-anchor="middle" font-family="Space Grotesk,sans-serif" font-size="10" fill="#c4b0ff"  font-weight="500">📦 skill/review</text>
+          <text x="520" y="411" text-anchor="middle" font-family="Noto Sans JP,sans-serif"  font-size="9"  fill="rgba(200,180,255,.4)">校正・品質チェック</text>
+
+          <rect x="620" y="380" width="160" height="38" rx="8" fill="rgba(245,158,11,.06)"  stroke="rgba(245,158,11,.2)"   stroke-width="1"/>
+          <text x="700" y="396" text-anchor="middle" font-family="Space Grotesk,sans-serif" font-size="10" fill="#fbbf24"  font-weight="500">📦 skill/publish</text>
+          <text x="700" y="411" text-anchor="middle" font-family="Noto Sans JP,sans-serif"  font-size="9"  fill="rgba(250,200,80,.4)">HTML生成・Git push</text>
+
+          <!-- DASHED LINES TO MEMORY -->
+          <line x1="160" y1="418" x2="160" y2="478" stroke="#38e8b0" stroke-width="1" stroke-opacity=".22" stroke-dasharray="3 3"/>
+          <line x1="340" y1="418" x2="340" y2="478" stroke="#38e8b0" stroke-width="1" stroke-opacity=".22" stroke-dasharray="3 3"/>
+          <line x1="520" y1="418" x2="520" y2="478" stroke="#38e8b0" stroke-width="1" stroke-opacity=".22" stroke-dasharray="3 3"/>
+          <line x1="700" y1="418" x2="700" y2="478" stroke="#38e8b0" stroke-width="1" stroke-opacity=".22" stroke-dasharray="3 3"/>
+
+          <!-- AUTOMEMORY BAND -->
+          <rect x="60" y="478" width="780" height="72" rx="12"
+            fill="rgba(56,232,176,.05)" stroke="rgba(56,232,176,.28)" stroke-width="1.2"/>
+
+          <!-- animated particle -->
+          <circle r="3" fill="#38e8b0" opacity=".6">
+            <animate attributeName="cx" values="120;820;120" dur="6s" repeatCount="indefinite"/>
+            <animate attributeName="cy" values="514;514;514" dur="6s" repeatCount="indefinite"/>
+            <animate attributeName="opacity" values="0;.7;0" dur="6s" repeatCount="indefinite"/>
+          </circle>
+          <circle r="2" fill="#38e8b0" opacity=".4">
+            <animate attributeName="cx" values="820;120;820" dur="8s" repeatCount="indefinite"/>
+            <animate attributeName="cy" values="528;528;528" dur="8s" repeatCount="indefinite"/>
+            <animate attributeName="opacity" values="0;.5;0" dur="8s" repeatCount="indefinite"/>
+          </circle>
+
+          <text x="450" y="503" text-anchor="middle"
+            font-family="Space Grotesk,sans-serif" font-size="12" fill="#38e8b0" font-weight="600">💾 AutoMemory — 自動学習・継続改善</text>
+          <text x="450" y="521" text-anchor="middle"
+            font-family="Noto Sans JP,sans-serif" font-size="10" fill="rgba(80,230,180,.6)">各エージェントの経験・学習パターン・ユーザープロフィールを自動記録・蓄積・再利用</text>
+          <text x="450" y="538" text-anchor="middle"
+            font-family="Space Grotesk,sans-serif" font-size="9" fill="rgba(56,232,176,.35)">researcher/MEMORY.md · writer/MEMORY.md · editor/MEMORY.md · writing_patterns.md · source_quality.md</text>
+
+          <!-- Memory ↔ Orchestrator bidirectional dashed -->
+          <line x1="450" y1="477" x2="450" y2="234" stroke="#38e8b0" stroke-width="1" stroke-opacity=".18" stroke-dasharray="5 4"/>
+
+          <!-- LEGEND BAR -->
+          <rect x="60" y="563" width="780" height="42" rx="8"
+            fill="rgba(255,255,255,.015)" stroke="rgba(255,255,255,.06)" stroke-width="1"/>
+          <text x="450" y="576" text-anchor="middle"
+            font-family="Space Grotesk,sans-serif" font-size="8.5" fill="rgba(180,220,255,.25)" letter-spacing=".06em">LEGEND</text>
+          <circle cx="92"  cy="587" r="4" fill="rgba(76,158,255,.5)"/>
+          <text x="100" y="591" font-family="Noto Sans JP,sans-serif" font-size="9" fill="rgba(180,220,255,.4)">Orchestrator</text>
+          <circle cx="188" cy="587" r="4" fill="rgba(56,232,176,.4)"/>
+          <text x="196" y="591" font-family="Noto Sans JP,sans-serif" font-size="9" fill="rgba(180,220,255,.4)">Subagents</text>
+          <rect x="278" y="583" width="14" height="8" rx="2" fill="rgba(76,158,255,.18)" stroke="rgba(76,158,255,.4)" stroke-width="1"/>
+          <text x="296" y="591" font-family="Noto Sans JP,sans-serif" font-size="9" fill="rgba(180,220,255,.4)">Skills</text>
+          <rect x="360" y="583" width="14" height="8" rx="2" fill="rgba(56,232,176,.14)" stroke="rgba(56,232,176,.4)" stroke-width="1"/>
+          <text x="378" y="591" font-family="Noto Sans JP,sans-serif" font-size="9" fill="rgba(180,220,255,.4)">AutoMemory</text>
+          <rect x="468" y="583" width="14" height="8" rx="2" fill="rgba(245,158,11,.12)" stroke="rgba(245,158,11,.4)" stroke-width="1"/>
+          <text x="486" y="591" font-family="Noto Sans JP,sans-serif" font-size="9" fill="rgba(180,220,255,.4)">Rules</text>
+          <rect x="540" y="583" width="14" height="8" rx="2" fill="rgba(167,139,250,.12)" stroke="rgba(167,139,250,.4)" stroke-width="1"/>
+          <text x="558" y="591" font-family="Noto Sans JP,sans-serif" font-size="9" fill="rgba(180,220,255,.4)">Hooks</text>
+        </svg>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<footer>
+  <div class="footer-inner">
+    <span class="footer-text">Claude Code のエージェント機能で半自動生成しています</span>
+  </div>
+</footer>
+
 </body>
 </html>
