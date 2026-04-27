@@ -140,7 +140,7 @@
     .featured-card {
       background: linear-gradient(135deg, rgba(15,25,40,.95) 0%, rgba(18,35,58,.95) 100%);
       border: 1px solid var(--border-bright); border-radius: 18px; overflow: hidden;
-      display: grid; grid-template-columns: 1fr 380px;
+      display: grid; grid-template-columns: 1fr;
       transition: border-color .3s, box-shadow .3s;
     }
     .featured-card:hover {
@@ -171,10 +171,7 @@
     }
 
     .featured-visual {
-      background: linear-gradient(135deg, #0b1a30, #0e2240);
-      border-left: 1px solid var(--border);
-      display: flex; align-items: center; justify-content: center;
-      position: relative; overflow: hidden;
+      display: none;
     }
 
     /* Post grid */
@@ -185,6 +182,10 @@
       gap: 1px; background: var(--border-bright);
       border: 1px solid var(--border-bright); border-radius: 14px; overflow: hidden;
     }
+    /* もっと見るボタンが表示されるときはグリッド下を角なしに */
+    .posts-section:has(.post-row) .posts-grid {
+      border-radius: 14px 14px 0 0;
+    }
 
     .post-card { background: var(--surface); padding: 1.75rem; text-decoration: none; display: flex; flex-direction: column; gap: .75rem; transition: background .2s; }
     .post-card:hover { background: var(--surface2); }
@@ -193,9 +194,56 @@
     .post-card-summary { font-size: .82rem; color: var(--muted2); line-height: 1.75; }
     .post-card-footer { margin-top: auto; padding-top: .75rem; border-top: 1px solid var(--border); display: flex; flex-wrap: wrap; gap: 5px; }
 
+    /* More posts list */
+    .more-posts-wrap { margin-top: 1px; }
+
+    .more-posts-list {
+      display: none;
+      flex-direction: column;
+      border: 1px solid var(--border-bright); border-top: none;
+      border-radius: 0 0 14px 14px; overflow: hidden;
+    }
+    .more-posts-list.open { display: flex; }
+
+    .post-row {
+      background: var(--surface);
+      display: grid;
+      grid-template-columns: 7rem 1fr auto;
+      align-items: center;
+      gap: 1.25rem;
+      padding: .85rem 1.5rem;
+      text-decoration: none;
+      border-top: 1px solid var(--border);
+      transition: background .2s;
+    }
+    .post-row:first-child { border-top: none; }
+    .post-row:hover { background: var(--surface2); }
+    .post-row-date { font-family: var(--font-en); font-size: .72rem; color: var(--muted); white-space: nowrap; }
+    .post-row-title { font-size: .88rem; font-weight: 500; color: var(--text); line-height: 1.5; }
+    .post-row-tags { display: flex; gap: 5px; flex-wrap: nowrap; justify-content: flex-end; }
+
+    .more-toggle-btn {
+      display: flex; align-items: center; justify-content: center; gap: .5rem;
+      width: 100%; margin-top: 1px;
+      padding: .75rem 1.5rem;
+      background: var(--surface); border: 1px solid var(--border-bright); border-radius: 0 0 14px 14px;
+      color: var(--muted2); font-family: var(--font-en); font-size: .78rem; letter-spacing: .06em;
+      cursor: pointer; transition: background .2s, color .2s;
+    }
+    .more-toggle-btn:hover { background: var(--surface2); color: var(--text); }
+    .more-toggle-btn svg { transition: transform .3s; }
+    .more-toggle-btn.open svg { transform: rotate(180deg); }
+    /* もっと見るリストが空のときはボタンごと非表示 */
+    .more-posts-wrap:not(:has(.post-row)) { display: none; }
+
+    @media (max-width: 520px) {
+      .post-row { grid-template-columns: 1fr; gap: .4rem; }
+      .post-row-tags { justify-content: flex-start; }
+    }
+
     /* AI Basics */
     .basics-section { margin-bottom: 5rem; }
-    .basics-intro { font-size: .9rem; color: var(--muted2); margin-bottom: 2.5rem; max-width: 620px; }
+    .basics-intro { font-size: .9rem; color: var(--muted2); margin-bottom: 2.5rem; }
 
     .term-grid {
       display: grid; grid-template-columns: repeat(auto-fill, minmax(250px,1fr));
@@ -313,12 +361,6 @@
   <section class="posts-section">
     <div class="posts-grid">
     <!-- AUTO-POSTS-START -->
-      <a href="posts/2026-04-27-agent-training-env-security-news.html" class="post-card">
-        <div class="post-card-date">2026-04-27</div>
-        <div class="post-card-title">エージェントを鍛える新環境とAIセキュリティの最前線【2026年4月末】</div>
-        <div class="post-card-summary">AIエージェントを長期タスクで訓練する環境が続々と整備される中、AIのサイバーセキュリティへの影響についての議論も深まっています。今週の注目トピックを4本まとめます。</div>
-        <div class="post-card-footer"><span class="tag">agent</span><span class="tag">ai</span><span class="tag">research</span><span class="tag">tool</span></div>
-      </a>
       <a href="posts/2026-04-26-frontier-models-agent-benchmark-2026.html" class="post-card">
         <div class="post-card-date">2026-04-26</div>
         <div class="post-card-title">GPT-5.5とClaude Opus 4.7が塗り替えたエージェントAIの実力基準</div>
@@ -333,6 +375,19 @@
       </a>
     <!-- AUTO-POSTS-END -->
     </div>
+
+    <!-- AUTO-MORE-START -->
+    <div class="more-posts-wrap">
+      <div class="more-posts-list" id="morePosts">
+      </div>
+      <button class="more-toggle-btn" id="moreToggle" onclick="toggleMore()">
+        <span id="moreLabel">もっと見る</span>
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+          <path d="M3 5l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+    </div>
+    <!-- AUTO-MORE-END -->
   </section>
 
   <!-- AI Basics -->
@@ -461,6 +516,8 @@
       Agent Blog は <strong style="color:var(--text)">オーケストレータ（Producer）</strong> が複数の専門サブエージェントを指揮する
       <strong style="color:var(--text)">エージェントチーム</strong> 構成で動いています。
       各エージェントはスキル・ルール・フックを組み合わせて動作し、AutoMemory で継続的に学習します。
+      <br><br>
+      単一エージェントではなくチームに分割する理由は明確です。<strong style="color:var(--text)">専門化による品質向上</strong>——Researcher は情報収集、Writer は執筆、Editor は校正と役割を絞ることで、それぞれが深い専門知識とルールを持てます。また <strong style="color:var(--text)">並列処理による高速化</strong> も大きなメリットで、依存関係のないタスクを同時進行させることで全体のスループットが上がります。さらに <strong style="color:var(--text)">スケーラビリティ</strong>——新しい役割が必要になったときもエージェントを追加するだけで対応でき、既存の仕組みを壊しません。単一の巨大プロンプトに全責任を負わせるより、役割ごとに最適化された小さなエージェントを組み合わせる方が、保守性・拡張性・出力品質のすべてで優れています。
     </p>
 
     <div class="advantage-row">
@@ -555,13 +612,53 @@
 
           <!-- DISPATCH ARROWS orch → agents -->
           <!-- to Researcher: x=160 -->
-          <path d="M 310 176 L 160 176 L 160 278" fill="none" stroke="#4c9eff" stroke-width="1" stroke-opacity=".5" marker-end="url(#arw)"/>
+          <path id="path-researcher" d="M 310 176 L 160 176 L 160 278" fill="none" stroke="#4c9eff" stroke-width="1" stroke-opacity=".5" marker-end="url(#arw)"/>
           <!-- to Writer: x=340 -->
-          <path d="M 370 176 L 340 176 L 340 278" fill="none" stroke="#38e8b0" stroke-width="1" stroke-opacity=".5" marker-end="url(#arw-g)"/>
+          <path id="path-writer" d="M 370 176 L 340 176 L 340 278" fill="none" stroke="#38e8b0" stroke-width="1" stroke-opacity=".5" marker-end="url(#arw-g)"/>
           <!-- to Editor: x=520 -->
-          <path d="M 530 176 L 520 176 L 520 278" fill="none" stroke="#a78bfa" stroke-width="1" stroke-opacity=".5" marker-end="url(#arw-p)"/>
+          <path id="path-editor" d="M 530 176 L 520 176 L 520 278" fill="none" stroke="#a78bfa" stroke-width="1" stroke-opacity=".5" marker-end="url(#arw-p)"/>
           <!-- to Publisher: x=700 -->
-          <path d="M 590 176 L 700 176 L 700 278" fill="none" stroke="#f59e0b" stroke-width="1" stroke-opacity=".5" marker-end="url(#arw-y)"/>
+          <path id="path-publisher" d="M 590 176 L 700 176 L 700 278" fill="none" stroke="#f59e0b" stroke-width="1" stroke-opacity=".5" marker-end="url(#arw-y)"/>
+
+          <!-- ANIMATED PARTICLES: Producer → Agent → Skill (往復) -->
+          <!-- Researcher route particle (blue) -->
+          <circle r="3" fill="#4c9eff" opacity="0">
+            <animateMotion dur="3.2s" repeatCount="indefinite" begin="0s" keyPoints="0;1;1;0" keyTimes="0;0.42;0.58;1" calcMode="spline" keySplines="0.4 0 0.6 1;0 0 1 1;0.4 0 0.6 1">
+              <mpath href="#path-researcher-full"/>
+            </animateMotion>
+            <animate attributeName="opacity" values="0;0.85;0.85;0" dur="3.2s" repeatCount="indefinite" begin="0s" keyTimes="0;0.08;0.92;1"/>
+          </circle>
+          <!-- Agent → Skill route for Researcher -->
+          <path id="path-researcher-skill" d="M 160 343 L 160 399" fill="none" stroke="none"/>
+          <!-- Combined full path Researcher -->
+          <path id="path-researcher-full" d="M 310 176 L 160 176 L 160 343 L 160 399" fill="none" stroke="none"/>
+
+          <!-- Writer route particle (green) -->
+          <circle r="3" fill="#38e8b0" opacity="0">
+            <animateMotion dur="3.0s" repeatCount="indefinite" begin="0.8s" keyPoints="0;1;1;0" keyTimes="0;0.42;0.58;1" calcMode="spline" keySplines="0.4 0 0.6 1;0 0 1 1;0.4 0 0.6 1">
+              <mpath href="#path-writer-full"/>
+            </animateMotion>
+            <animate attributeName="opacity" values="0;0.85;0.85;0" dur="3.0s" repeatCount="indefinite" begin="0.8s" keyTimes="0;0.08;0.92;1"/>
+          </circle>
+          <path id="path-writer-full" d="M 370 176 L 340 176 L 340 343 L 340 399" fill="none" stroke="none"/>
+
+          <!-- Editor route particle (purple) -->
+          <circle r="3" fill="#a78bfa" opacity="0">
+            <animateMotion dur="3.4s" repeatCount="indefinite" begin="1.6s" keyPoints="0;1;1;0" keyTimes="0;0.42;0.58;1" calcMode="spline" keySplines="0.4 0 0.6 1;0 0 1 1;0.4 0 0.6 1">
+              <mpath href="#path-editor-full"/>
+            </animateMotion>
+            <animate attributeName="opacity" values="0;0.85;0.85;0" dur="3.4s" repeatCount="indefinite" begin="1.6s" keyTimes="0;0.08;0.92;1"/>
+          </circle>
+          <path id="path-editor-full" d="M 530 176 L 520 176 L 520 343 L 520 399" fill="none" stroke="none"/>
+
+          <!-- Publisher route particle (yellow) -->
+          <circle r="3" fill="#f59e0b" opacity="0">
+            <animateMotion dur="3.6s" repeatCount="indefinite" begin="2.4s" keyPoints="0;1;1;0" keyTimes="0;0.42;0.58;1" calcMode="spline" keySplines="0.4 0 0.6 1;0 0 1 1;0.4 0 0.6 1">
+              <mpath href="#path-publisher-full"/>
+            </animateMotion>
+            <animate attributeName="opacity" values="0;0.85;0.85;0" dur="3.6s" repeatCount="indefinite" begin="2.4s" keyTimes="0;0.08;0.92;1"/>
+          </circle>
+          <path id="path-publisher-full" d="M 590 176 L 700 176 L 700 343 L 700 399" fill="none" stroke="none"/>
 
           <!-- SUBAGENT BOXES -->
           <!-- Researcher -->
@@ -689,5 +786,15 @@
   </div>
 </footer>
 
+<script>
+  function toggleMore() {
+    const list = document.getElementById('morePosts');
+    const btn  = document.getElementById('moreToggle');
+    const label = document.getElementById('moreLabel');
+    const isOpen = list.classList.toggle('open');
+    btn.classList.toggle('open', isOpen);
+    label.textContent = isOpen ? '閉じる' : 'もっと見る';
+  }
+</script>
 </body>
 </html>
