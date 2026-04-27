@@ -7,6 +7,40 @@
 
 <!-- 収集データはここから下に追記されます -->
 
+## 2026-04-27 収集分
+
+### [Claude Design by Anthropic Labs](https://www.anthropic.com/news/claude-design-anthropic-labs)
+- **情報源**: Anthropic 公式ニュース
+- **公開日**: 2026-04-17
+- **要点**: AnthropicがAnthropicLabsブランドで「Claude Design」をリリースした。デザイン・プロトタイプ・スライド・ワンページャーなどのビジュアル成果物をClaudeと協働して作成できるツールで、静的デザインをインタラクティブなプロトタイプに変換する機能が目玉。CanvaやFigmaとの連携も対応しており、デザイナー以外のビジネスユーザーもビジュアルコンテンツを制作できる。
+- **記事化候補**: Yes（エージェント支援ツール・AI活用の観点として）
+
+### [AI and the Future of Cybersecurity: Why Openness Matters](https://huggingface.co/blog/cybersecurity-openness)
+- **情報源**: Hugging Face Blog
+- **公開日**: 2026-04-21
+- **要点**: Hugging FaceがAIとサイバーセキュリティの関係を分析したレポートを公開した。AIのサイバーセキュリティ能力はモデルサイズや汎用ベンチマーク性能と単純には比例しない「ジャグド（凸凹）」な特性を持つと指摘し、オープンソースモデルが防御側のイノベーションを加速する重要性を論じている。サイバーセキュリティの未来は単一モデルよりもそれを取り巻くエコシステムによって決まると結論付けている。
+- **記事化候補**: Yes（AIセキュリティ・オープンソース観点の記事として）
+
+### [Building long-horizon SWE environments on Hugging Face: Frontier SWE × OpenEnv](https://huggingface.co/blog/rycerzes/building-long-horizon-swe-environments-on-openenv)
+- **情報源**: Hugging Face Blog
+- **公開日**: 2026-04-26
+- **要点**: ソフトウェアエンジニアリング（SWE）エージェントを長期タスク（45〜90分/エピソード）で訓練・評価するためのオープン環境「Frontier SWE × OpenEnv」を構築した事例。HTTP制御・MCPツール・多段階ルーブリックを組み合わせた均一な環境コントラクトを提供し、エージェントが計画・実行・前進を繰り返す長期タスクに対応する。オフラインRLを使ったトレーニングループもHugging Face Spaces上で公開されている。
+- **記事化候補**: Yes（エージェント学習環境・長期タスク実行の実践例として）
+
+### [Ecom-RLVE: Adaptive Verifiable Environments for E-Commerce Conversational Agents](https://huggingface.co/blog/ecom-rlve)
+- **情報源**: Hugging Face Blog
+- **公開日**: 2026-04-16
+- **要点**: Eコマース向けの強化学習可能な検証環境「EcomRLVE-GYM」を発表。商品検索・代替品提案・カート構築・返品・注文追跡など8種類のマルチターン・ツール利用エージェント環境を提供し、難易度の12軸カリキュラムとアルゴリズム的に検証可能な報酬関数を備える。従来の単一ターン推論パズルからエージェント的ドメインへRLVR（強化学習による検証可能な報酬）を拡張した点が新しい。
+- **記事化候補**: Yes（エージェント訓練・RLVR手法の実践例として）
+
+### [Build Korean Agents with Nemotron-Personas](https://huggingface.co/blog/nvidia/build-korean-agents-with-nemotron-personas)
+- **情報源**: Hugging Face Blog（NVIDIA）
+- **公開日**: 2026-04-21
+- **要点**: NVIDIAが韓国語・韓国文化コンテキストに特化したペルソナデータセット「Nemotron-Personas-Korea」を公開した。合成ペルソナをホストAPIとHugging Face Spacesを使って約20分でデプロイ可能な韓国語エージェントに変換するチュートリアルを提供している。金融・教育・公共サービスなど分野別エージェントの構築が可能で、多言語・文化特化エージェント開発の事例となる。
+- **記事化候補**: Yes（多言語エージェント構築・ペルソナデータ活用の観点として）
+
+---
+
 ## 2026-04-26 収集分
 
 ### [Introducing Claude Opus 4.7](https://www.anthropic.com/news/claude-opus-4-7)
