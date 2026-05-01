@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Claude Codeの仕組みを解説：CLAUDE.md・エージェントチーム・hooks・memoryの役割 - Agent Blog</title>
+  <meta name="description" content="Claude Codeを構成する6つのコンポーネント（CLAUDE.md・agent teams・skills・rules・hooks・memory）の役割と連携を、実際のリポジトリ構成をもとに初心者向けに解説します。">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600&family=Noto+Sans+JP:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #080e1a;
+      --bg2: #0b1422;
+      --surface: #0f1928;
+      --surface2: #152236;
+      --border: rgba(100,160,255,0.1);
+      --border-bright: rgba(100,180,255,0.22);
+      --accent:  #4c9eff;
+      --accent2: #38e8b0;
+      --accent3: #a78bfa;
+      --accent4: #f59e0b;
+      --text: #e0eeff;
+      --muted: #5a7a9a;
+      --muted2: #8aadcc;
+      --font-en: 'Space Grotesk', sans-serif;
+      --font-ja: 'Noto Sans JP', sans-serif;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-ja);
+      line-height: 1.8;
+      overflow-x: hidden;
+    }
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background:
+        radial-gradient(ellipse 80% 50% at 10% 0%, rgba(30,80,180,0.28) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 40% at 90% 20%, rgba(30,200,140,0.18) 0%, transparent 55%),
+        radial-gradient(ellipse 50% 60% at 50% 80%, rgba(60,100,220,0.15) 0%, transparent 60%);
+      pointer-events: none; z-index: 0;
+    }
+    nav {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(8,14,26,0.82);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border-bright);
+    }
+    .nav-inner {
+      max-width: 860px; margin: 0 auto;
+      padding: 0 2rem;
+      display: flex; align-items: center; justify-content: space-between;
+      height: 54px;
+    }
+    .nav-logo {
+      font-family: var(--font-en); font-weight: 600; font-size: 1rem;
+      color: var(--text); text-decoration: none;
+      display: flex; align-items: center; gap: 9px;
+    }
+    .nav-logo-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--accent2);
+      box-shadow: 0 0 8px var(--accent2);
+    }
+    .back-link {
+      font-size: .83rem; color: var(--muted2); text-decoration: none;
+      display: inline-flex; align-items: center; gap: 5px;
+      transition: color .2s;
+    }
+    .back-link:hover { color: var(--text); }
+    .container {
+      max-width: 860px; margin: 0 auto;
+      padding: 3rem 2rem 5rem;
+      position: relative; z-index: 1;
+    }
+    .post-header { margin-bottom: 2.5rem; }
+    .post-date {
+      font-family: var(--font-en); font-size: .75rem;
+      color: var(--muted); margin-bottom: 1rem;
+    }
+    .post-title {
+      font-family: var(--font-ja);
+      font-size: clamp(1.5rem, 4vw, 2.2rem);
+      font-weight: 500; line-height: 1.45;
+      color: var(--text); margin-bottom: 1rem;
+    }
+    .post-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 1.5rem; }
+    .tag {
+      font-family: var(--font-en); font-size: .62rem; padding: .2em .65em;
+      background: rgba(76,158,255,.08); color: #6ab4ff;
+      border-radius: 4px; border: 1px solid rgba(76,158,255,.18);
+    }
+    .post-summary {
+      font-size: .95rem; color: var(--muted2); line-height: 1.8;
+      border-left: 3px solid var(--accent); padding-left: 1rem;
+    }
+    .post-body { margin-top: 2.5rem; }
+    .post-body h2 {
+      font-size: 1.35rem; font-weight: 500; color: var(--text);
+      margin: 2.5rem 0 1rem;
+      padding-bottom: .4rem;
+      border-bottom: 1px solid var(--border-bright);
+    }
+    .post-body h3 {
+      font-size: 1.1rem; font-weight: 500; color: var(--text);
+      margin: 1.8rem 0 .7rem;
+    }
+    .post-body h4 {
+      font-size: .95rem; font-weight: 500; color: var(--muted2);
+      margin: 1.4rem 0 .5rem;
+    }
+    .post-body p { margin-bottom: 1.2rem; color: var(--muted2); font-size: .95rem; }
+    .post-body strong { color: var(--text); font-weight: 500; }
+    .post-body a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+    .post-body ul, .post-body ol {
+      margin: 1rem 0 1.2rem 1.5rem; color: var(--muted2); font-size: .95rem;
+    }
+    .post-body li { margin-bottom: .4rem; }
+    .post-body code {
+      background: rgba(76,158,255,.08); color: #7dd3fc;
+      padding: .15em .45em; border-radius: 4px;
+      font-family: 'Consolas', 'Menlo', monospace; font-size: .88em;
+    }
+    .post-body pre {
+      background: rgba(10,20,40,.8);
+      border: 1px solid var(--border-bright);
+      border-radius: 10px; padding: 1.25rem 1.5rem;
+      overflow-x: auto; margin: 1.2rem 0;
+    }
+    .post-body pre code {
+      background: none; padding: 0; color: #a5d6f8; font-size: .87rem;
+    }
+    .post-body hr {
+      border: none; border-top: 1px solid var(--border);
+      margin: 2rem 0;
+    }
+    footer { border-top: 1px solid var(--border); padding: 2rem; margin-top: 3rem; }
+    .footer-inner {
+      max-width: 860px; margin: 0 auto;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .footer-text { font-size: .8rem; color: var(--muted); }
+    @media (max-width:520px) { .container { padding: 2rem 1.25rem 3rem; } }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <a href="../index.html" class="nav-logo"><span class="nav-logo-dot"></span>Agent Blog</a>
+    <a href="../index.html" class="back-link">← 記事一覧</a>
+  </div>
+</nav>
+
+<div class="container">
+  <article>
+    <header class="post-header">
+      <div class="post-date">2026-05-01</div>
+      <h1 class="post-title">Claude Codeの仕組みを解説：CLAUDE.md・エージェントチーム・hooks・memoryの役割</h1>
+      <div class="post-tags"><span class="tag">agent</span><span class="tag">ai</span><span class="tag">workflow</span><span class="tag">tutorial</span></div>
+      <p class="post-summary">Claude Codeを構成する6つのコンポーネント（CLAUDE.md・agent teams・skills・rules・hooks・memory）の役割と連携を、実際のリポジトリ構成をもとに初心者向けに解説します。</p>
+    </header>
+    <div class="post-body">
+<h2>はじめに</h2>
+<p><a href="https://www.anthropic.com/claude-code" target="_blank" rel="noopener">Claude Code</a>は、Anthropicが提供するAIアシスタントをコマンドラインやエディタから使えるツールです。単純に「質問に答えてもらう」だけでなく、プロジェクトのルールを覚えさせたり、複数のAIエージェントに役割を分担させたりと、高度な自動化ワークフローを組めるのが特徴です。</p>
+<p>この記事では、Claude Codeを構成する主要な6つのコンポーネントを、このブログ（agent-blog）の実際の構成ファイルを参照しながら解説します。「なんとなく使い始めたけど、<code>.claude/</code> フォルダの中身が何なのかよくわからない」という方に向けた内容です。</p>
+<p>&gt; <strong>初心者向けまとめ</strong>: Claude Codeは「設定ファイル＋役割分担AIチーム」で動くツールです。本記事を読むと、その仕組みの全体像が見えてきます。</p>
+<hr>
+<h2>CLAUDE.md — AIへの「仕事の引き継ぎ書」</h2>
+<p><code>CLAUDE.md</code> は、プロジェクトのルールや構成をClaude Codeに伝えるための設定ファイルです。Claudeはセッション開始時にこのファイルを自動的に読み込み、プロジェクトの文脈を把握したうえで作業を開始します。</p>
+<p>たとえば、このブログの <code>CLAUDE.md</code> には次のような内容が書かれています。</p>
+<ul>
+<li>ブログのディレクトリ構成（<code>posts/</code>・<code>drafts/</code>・<code>sources/</code> など）</li>
+<li>記事フォーマット（frontmatter の書き方、必要なセクション）</li>
+<li>コーディング規約（Markdownのみ編集する、ファイル名のルールなど）</li>
+<li>絶対ルール（<code>git push --force</code> の禁止、<code>posts/</code> への直接書き込み禁止など）</li>
+</ul>
+<p>仕事でいうと、「新しいアルバイトさんに渡すマニュアル冊子」のようなものです。毎回同じ説明をしなくても、CLAUDE.md さえ読めばプロジェクトの進め方がわかります。</p>
+<p>さらに <code>CLAUDE.local.md</code> というファイルも使えます。こちらは個人の作業スタイルや環境メモなど、チームには共有しない個人設定を書く場所です。<code>.gitignore</code> に追加しておけばリポジトリには含まれません。</p>
+<p>&gt; <strong>初心者向けまとめ</strong>: CLAUDE.md は「このプロジェクトでは何をどうやって作るか」をAIに伝える最重要ファイルです。まずここを丁寧に書くと、AIの動きが格段に安定します。</p>
+<hr>
+<h2>agent teams — 役割分担したAIチームの仕組み</h2>
+<p>Claude Codeでは、複数のAIエージェントに異なる役割を持たせて協力させる「エージェントチーム」を構成できます。エージェントとは、特定の目的に特化した設定を持つAIの動作単位のことです。エージェントの定義は <code>.claude/agents/</code> フォルダに保存します。</p>
+<p>このブログでは以下の4つのエージェントが連携しています。</p>
+<pre><code>producer（オーケストレーター）
+    ├── researcher  — 最新情報をWebから収集する
+    ├── writer      — 収集結果をもとに記事を執筆する
+    └── editor      — 記事をSEO・文体の観点でレビューする</code></pre>
+<p>各エージェントはMarkdownファイル（例：<code>researcher.md</code>）で定義されていて、次の項目を持ちます。</p>
+<ul>
+<li><strong>name / description</strong>: エージェントの名前と役割の説明</li>
+<li><strong>tools</strong>: そのエージェントが使えるツール（WebFetch, Read, Write など）</li>
+<li><strong>プロンプト本文</strong>: 起動時に何をどの順でやるかの詳細な手順書</li>
+</ul>
+<p>たとえば <code>researcher.md</code> には「Step 1: メモリを読み込む」「Step 2: Tier 1サイトをWebFetchで確認する」「Step 6: COLLECT_RESULT形式で報告する」といった手順が書かれています。<code>producer</code>（オーケストレーター）がresearcherを起動し、返ってきた結果を確認してからwriterを起動する、という直列パイプラインが組まれています。</p>
+<p>仕事でいうと、「編集長（producer）が取材担当（researcher）・執筆担当（writer）・校閲担当（editor）をそれぞれ専門チームに振り分けて進行管理する編集部」のイメージです。</p>
+<p>&gt; <strong>初心者向けまとめ</strong>: エージェントチームを使うと、AIが「収集→執筆→レビュー」のような複数ステップの作業を自律的にこなせるようになります。人間は最終確認だけすればよい状態が作れます。</p>
+<hr>
+<h2>skills と rules — 「手順書」と「守るべきルール集」</h2>
+<h3>skills: 作業の手順書</h3>
+<p><code>.claude/skills/</code> フォルダには、各コマンド（<code>/collect</code>・<code>/draft</code>・<code>/review</code>・<code>/publish</code>）の詳細な手順書（<code>SKILL.md</code>）が入っています。</p>
+<p>たとえば <code>/collect</code> の <code>SKILL.md</code> には「Step 1: 収集対象を決める」「Step 2: Tier 1の4サイトをWebFetchで確認する」「Step 3: 候補が3件未満なら補足検索する」といったステップが定義されています。AIはこの手順書を読んで作業を進めるため、毎回同じ品質で情報収集を実行できます。</p>
+<h3>rules: 文体・SEO・情報源のルール</h3>
+<p><code>.claude/rules/</code> フォルダには、AIが記事を書くときに守るべきルールが3つのファイルに分かれて保存されています。</p>
+<ul>
+<li><strong><code>tone.md</code></strong>: 「ですます調を使う」「中学生でもわかる言葉を選ぶ」「禁止表現の一覧」など文体のルール</li>
+<li><strong><code>seo.md</code></strong>: タイトルの文字数・見出し構成・frontmatterの書き方などSEO（検索エンジン最適化）のルール</li>
+<li><strong><code>sources.md</code></strong>: 信頼できる情報源のリスト（Tier 1〜3の分類と収集フォーマット）</li>
+</ul>
+<p>skills が「何をどうやるか（手順）」を定義するのに対して、rules は「何をしてはいけないか・何に従うか（制約と基準）」を定義します。料理でいえば、skills は「レシピの手順」で、rules は「食品衛生の基準と使っていい食材のリスト」に当たります。</p>
+<p>&gt; <strong>初心者向けまとめ</strong>: skills で作業手順を標準化し、rules で品質基準を統一することで、誰が（どのエージェントが）作業しても同じクオリティの結果が得られます。</p>
+<hr>
+<h2>hooks と memory — 「自動ガード」と「学習する記憶」</h2>
+<h3>hooks: 危険な操作を自動でブロックするガード</h3>
+<p>hooks（フック）とは、特定のタイミングに自動実行されるプログラムのことです。<code>.claude/hooks/</code> フォルダには、シェルスクリプト形式のhooksが入っています。</p>
+<ul>
+<li><strong><code>pre_tool_use.sh</code></strong>: ツール実行前に走るスクリプト。<code>git push --force</code> の禁止、<code>posts/</code> への直接書き込みのブロック、拡張子チェックなどを実施します。</li>
+<li><strong><code>session_start.sh</code></strong>: セッション開始時に走るスクリプト。未完成の下書き一覧・記事化候補件数・公開待ちファイルの一覧を自動表示します。</li>
+</ul>
+<p>hooksは「交通信号機」のようなものです。AIが危険な操作（例：<code>git push --force</code>）をしようとしたとき、人間が気づく前に自動でブロックします。セッション開始時のhooksは「今日の作業状況の朝礼報告」として機能し、何をすべきかをすぐに把握できます。</p>
+<h3>memory: 経験を蓄積するエージェントの記憶</h3>
+<p><code>.claude/agent-memory/</code> フォルダには、各エージェントが学習・蓄積する情報が保存されます。</p>
+<ul>
+<li><strong>researcher</strong> の <code>source_quality.md</code>: 過去に有効だった情報源・避けるべき情報源の実績</li>
+<li><strong>writer</strong> の <code>covered_topics.md</code>: 執筆済み記事のトピック一覧（重複防止用）</li>
+<li><strong>writer</strong> の <code>writing_patterns.md</code>: レビューを通過した記事構成パターン</li>
+<li><strong>editor</strong> の <code>common_issues.md</code>: 繰り返し起きているレビュー指摘事項</li>
+</ul>
+<p>たとえば writerエージェントは記事を書く前に <code>covered_topics.md</code> を参照し、すでに似た記事を書いていないか確認します。またresearcherは作業後に <code>source_quality.md</code> を更新し、今回使えた/使えなかった情報源を記録します。これにより、エージェントは実績を積むほどより良い判断ができるようになります。</p>
+<p>仕事でいうと、「先輩社員が『これは使えた、これは失敗だった』と引き継ぎノートを書き、後任が同じ失敗を繰り返さないようにする仕組み」です。</p>
+<p>&gt; <strong>初心者向けまとめ</strong>: hooks は「ルール違反を自動で防ぐ仕組み」、memory は「AIが経験から学ぶ仕組み」です。この2つがあることで、AIは使うほど賢くなり、ミスも減っていきます。</p>
+<hr>
+<h2>まとめ</h2>
+<p>Claude Codeの主要コンポーネントを整理すると、次のようになります。</p>
+<p>| コンポーネント | 場所 | 役割 | |---|---|---| | CLAUDE.md | プロジェクトルート | プロジェクト全体のルール・構成の説明 | | agents/ | <code>.claude/agents/</code> | 各エージェントの役割・手順・使えるツールの定義 | | skills/ | <code>.claude/skills/</code> | 各コマンドの詳細な作業手順書 | | rules/ | <code>.claude/rules/</code> | 文体・SEO・情報源などの品質基準 | | hooks/ | <code>.claude/hooks/</code> | 危険操作のブロックと作業状況の自動表示 | | agent-memory/ | <code>.claude/agent-memory/</code> | エージェントが経験から学ぶ記憶の保存先 |</p>
+<p>これらは単独でも機能しますが、組み合わせることで大きな力を発揮します。CLAUDE.md でプロジェクトを理解し、rules で品質を保ち、skills で手順を標準化し、hooks でミスを防ぎ、memory で経験を蓄積する。このサイクルが回ることで、AIが「使い捨てのアシスタント」から「成長するチームメンバー」へと変わっていきます。</p>
+<p>Claude Codeを使い始めたばかりの方は、まず <code>CLAUDE.md</code> を丁寧に書くことから始めてみてください。それだけでもAIの動きは大きく変わります。次のステップとして、<code>.claude/rules/tone.md</code> のような文体ルールファイルを追加すると、アウトプットの品質がさらに安定します。<a href="https://docs.anthropic.com/ja/docs/claude-code/overview" target="_blank" rel="noopener">Anthropic の公式ドキュメント</a>も合わせて参照してみてください。</p>
+    </div>
+  </article>
+</div>
+
+<footer>
+  <div class="footer-inner">
+    <span class="footer-text">Claude Code のエージェント機能で半自動生成しています</span>
+    <a href="../index.html" class="back-link">← 記事一覧に戻る</a>
+  </div>
+</footer>
+
+</body>
+</html>
