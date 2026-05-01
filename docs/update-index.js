@@ -452,8 +452,9 @@ if (entries.length > 0) {
     `<!-- AUTO-FEATURED-START -->\n${featuredHtml}\n    <!-- AUTO-FEATURED-END -->`
   );
 
-  // Post grid（全件）
-  const postCards = entries
+  // Post grid（2〜3件目：entries[1], entries[2]）
+  const gridEntries = entries.slice(1, 4);
+  const postCards = gridEntries
     .map(
       (e) =>
         `      <a href="posts/${e.slug}.html" class="post-card">\n` +
@@ -468,6 +469,36 @@ if (entries.length > 0) {
   html = html.replace(
     /<!-- AUTO-POSTS-START -->[\s\S]*?<!-- AUTO-POSTS-END -->/,
     `<!-- AUTO-POSTS-START -->\n${postCards}\n    <!-- AUTO-POSTS-END -->`
+  );
+
+  // もっと見るリスト（4件目以降：entries[3]〜）
+  const moreEntries = entries.slice(4);
+  const moreRows = moreEntries
+    .map(
+      (e) =>
+        `        <a href="posts/${e.slug}.html" class="post-row">\n` +
+        `          <span class="post-row-date">${escapeHtml(e.date)}</span>\n` +
+        `          <span class="post-row-title">${escapeHtml(e.title)}</span>\n` +
+        `          <span class="post-row-tags">${e.tagsHtml}</span>\n` +
+        `        </a>`
+    )
+    .join("\n");
+
+  html = html.replace(
+    /<!-- AUTO-MORE-START -->[\s\S]*?<!-- AUTO-MORE-END -->/,
+    `<!-- AUTO-MORE-START -->\n` +
+    `    <div class="more-posts-wrap">\n` +
+    `      <div class="more-posts-list" id="morePosts">\n` +
+    `${moreRows}\n` +
+    `      </div>\n` +
+    `      <button class="more-toggle-btn" id="moreToggle" onclick="toggleMore()">\n` +
+    `        <span id="moreLabel">もっと見る</span>\n` +
+    `        <svg width="14" height="14" viewBox="0 0 14 14" fill="none">\n` +
+    `          <path d="M3 5l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>\n` +
+    `        </svg>\n` +
+    `      </button>\n` +
+    `    </div>\n` +
+    `    <!-- AUTO-MORE-END -->`
   );
 }
 
