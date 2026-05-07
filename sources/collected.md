@@ -7,6 +7,14 @@
 
 <!-- 収集データはここから下に追記されます -->
 
+## 2026-05-07 収集分
+
+### [NotebookLM 公式サイト](https://notebooklm.google.com)
+- **情報源**: Google
+- **公開日**: 2023-07-12（初回リリース）
+- **要点**: GoogleのNotebookLMは、ユーザーがアップロードしたPDF・Googleドキュメント・YouTube URL等の資料のみを参照してAIが回答するRAGベースのツール。回答には必ず引用元が付与される。2024年にGemini 1.5 Proをバックエンドに採用し、最大100万トークンの資料処理が可能になった。Audio Overview（資料を対話形式の音声に変換する機能）が特徴。
+- **記事化候補**: Yes（NotebookLM入門記事として記事化済み）
+
 ## 2026-04-27 収集分
 
 ### [Claude Design by Anthropic Labs](https://www.anthropic.com/news/claude-design-anthropic-labs)
