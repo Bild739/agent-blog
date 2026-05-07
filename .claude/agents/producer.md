@@ -97,8 +97,9 @@ editor:     公開可能
 
 次のアクション:
   1. GitHub PR を確認・マージ
-  2. git pull
-  3. /publish pending/[ファイル名]
+  2. git pull でローカルを更新
+  ⚠️  3. /publish pending/[ファイル名] を必ず実行
+      ↑ これを忘れると docs/ に記事が反映されません
 ======================================
 ```
 
@@ -149,7 +150,7 @@ Agent(subagent_type="editor", prompt="[DRAFT_FILE_B] をレビュー。REVIEW_RE
   - drafts/YYYY-MM-DD-slug-b.md（要修正）
 
 次のアクション:
-  公開可能 → /publish [ファイル名]
+  公開可能 → PR マージ後に /publish [ファイル名] を必ず実行（忘れると docs/ に反映されません）
   要修正   → 修正後 /review を再実行
 =====================================
 ```

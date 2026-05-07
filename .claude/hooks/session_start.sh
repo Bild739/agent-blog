@@ -44,6 +44,24 @@ if [ "$PENDING_COUNT" -gt 0 ]; then
   echo ""
 fi
 
+# posts/ にあって docs/posts/ にないファイルを検出（publish忘れ）
+unpublished=()
+for f in posts/*.md; do
+  [ -f "$f" ] || continue
+  slug=$(basename "$f")
+  if [ ! -f "docs/posts/$slug" ]; then
+    unpublished+=("$slug")
+  fi
+done
+if [ ${#unpublished[@]} -gt 0 ]; then
+  echo "【要対応】/publish 未実行の記事があります："
+  for s in "${unpublished[@]}"; do
+    echo "  - $s"
+  done
+  echo "  → /publish posts/<ファイル名> で公開してください"
+  echo ""
+fi
+
 # パイプラインステータス（producer エージェントの実行結果）
 if [ -f "drafts/.pipeline-status.md" ]; then
   LAST_RUN=$(tail -5 "drafts/.pipeline-status.md")
